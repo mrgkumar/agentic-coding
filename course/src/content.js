@@ -1,14 +1,14 @@
 export const lessons = [
   { id: "start", title: "Start", short: "Start", progress: "Start", objective: "Set the learning contract: control an engineering agent instead of trying to prompt it perfectly." },
-  { id: "agent", title: "How an Agent Thinks", short: "Agent + attention", progress: "Model", objective: "Understand the agent loop, how attention uses context, and why context quality matters more than raw context volume." },
+  { id: "agent", title: "From LLM to Coding Agent", short: "LLM → agent", progress: "Model", objective: "Understand tokens, Transformer blocks, the agent loop, how attention uses context, and why tools create observable evidence rather than certainty." },
   { id: "context", title: "Build Context", short: "Context", progress: "Context", objective: "Build relevant repository context in a deliberate ladder instead of flooding the conversation." },
-  { id: "research", title: "Research Before Editing", short: "Research", progress: "Evidence", objective: "Separate observations, hypotheses, and open questions before touching code." },
+  { id: "research", title: "Investigate Before Editing", short: "Investigate", progress: "Evidence", objective: "Separate known facts, inferences, assumptions, and open questions before touching code." },
   { id: "plan", title: "Plan the Change", short: "Plan", progress: "Plan", objective: "Review for the smallest coherent change and protect behavior that must remain stable." },
-  { id: "execution", title: "Control Execution", short: "Execute", progress: "Control", objective: "Keep plan, /goal, and /loop distinct while retaining human control." },
-  { id: "verification", title: "Verify & Accept", short: "Verify", progress: "Verify", objective: "Decide whether the goal is met and whether the change is actually acceptable." },
-  { id: "controls", title: "Extend & Control Claude", short: "Extensions", progress: "Extend", objective: "Choose the right extension or control: guidance, reusable skills, external tools, automation, presentation, or safety boundaries." },
+  { id: "execution", title: "Control Execution", short: "Execute", progress: "Control", objective: "Keep the plan, completion condition, and recurring schedule distinct while retaining human control." },
+  { id: "verification", title: "Verify, Review & Accept", short: "Verify", progress: "Verify", objective: "Review evidence and decide whether the completion condition is met and the change is acceptable." },
+  { id: "controls", title: "Extend & Constrain the Agent", short: "Extensions", progress: "Extend", objective: "Choose the right responsibility: guidance, reusable procedure, external capability, focused worker, automation, authorization, or isolation." },
   { id: "context-agents", title: "Manage Long-Running Work", short: "Long-running work", progress: "Continuity", objective: "Manage memory, context, sessions, handoffs, recovery, and parallel work without losing engineering state." },
-  { id: "capstone", title: "Capstone", short: "Capstone", progress: "Apply", objective: "Transfer the complete workflow to a new repository with an ambiguous requirement." }
+  { id: "capstone", title: "Cross-Platform Capstone", short: "Capstone", progress: "Apply", objective: "Transfer the complete workflow to a new repository with an ambiguous requirement, independent of product commands." }
 ];
 
 export const files = {
@@ -82,7 +82,15 @@ export const researchSources = [
   { label: "Found in the Middle", note: "Connects lost-in-the-middle behavior with U-shaped positional attention bias.", url: "https://arxiv.org/abs/2406.16008" },
   { label: "Positional Biases Shift as Inputs Approach Context Window Length", note: "Reports weakening primacy and relatively stable recency for very long relative inputs, producing an end-dominant regime.", url: "https://arxiv.org/abs/2508.07479" },
   { label: "Effective context engineering for AI agents", note: "Anthropic engineering guidance on context rot, finite attention budget, and high-signal context.", url: "https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents" },
-  { label: "Claude Code context window", note: "Official Claude Code view of what occupies context and how to manage it.", url: "https://code.claude.com/docs/en/context-window" }
+  { label: "Claude Code context window", note: "Official Claude Code view of what occupies context and how to manage it.", url: "https://code.claude.com/docs/en/context-window" },
+  { label: "Codex best practices", note: "Official Codex guidance for repository orientation, reusable project guidance, verification, and bounded tasks.", url: "https://learn.chatgpt.com/guides/best-practices" }
+];
+
+export const tokenSources = [
+  { label: "OpenAI Tokenizer", note: "Interactive tokenizer and token-count explorer; the exact result depends on the selected model family.", url: "https://platform.openai.com/tokenizer" },
+  { label: "Hugging Face: Tokenizers", note: "A practical explanation of tokenization pipelines, vocabularies, and common subword methods.", url: "https://huggingface.co/docs/course/en/chapter2/4" },
+  { label: "Attention Is All You Need", note: "The original Transformer paper: attention-based sequence processing without recurrence or convolutions.", url: "https://arxiv.org/abs/1706.03762" },
+  { label: "Optional video: Transformers, the tech behind LLMs", note: "Visual explanation of tokens, embeddings, attention, and the Transformer stack.", url: "https://www.youtube.com/watch?v=wjZofJX0v4M" }
 ];
 
 export const officialDocs = [

@@ -1,33 +1,45 @@
-import { lessons, files, capstoneFiles, ladderSteps, researchSources, officialDocs } from "./content.js";
+import { lessons, files, capstoneFiles, ladderSteps, researchSources, tokenSources } from "./content.js";
+import { platforms, platformConcepts, sourceRegistry, normalizePlatform, isReviewOverdue } from "./platforms.js";
+import { renderReadiness, renderFirstTask, renderTokenPrimer, renderTaskContract, renderConstructPlan, renderRetrievalCheck } from "./foundations.js";
+import { renderGlossary } from "./glossary.js";
+import { renderCapstoneEvidence, renderCapstoneHandoff } from "./capstone.js";
 
 const main = document.querySelector("#main");
 const nav = document.querySelector("#lesson-nav");
 const bar = document.querySelector("#progress-bar");
 const progressLabel = document.querySelector("#progress-label");
+const platformSelect = document.querySelector("#platform-select");
 
 const STORAGE_KEY = "agent-course-state-v3";
 const state = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
 state.done ||= [];
 state.answers ||= [];
+state.drafts ||= {};
 state.mode ||= "full";
+state.platform = normalizePlatform(new URLSearchParams(location.search).get("platform") || state.platform);
 
 const fullSequence = [
   { path: "start", module: "start", label: "Start", title: "Start" },
-  { path: "agent", module: "agent", label: "Chat vs agent", title: "From Chat to Agent" },
+  { path: "start/readiness", module: "start", label: "Readiness", title: "Your starting point" },
+  { path: "agent", module: "agent", label: "LLM vs agent", title: "From LLM to Coding Agent" },
+  { path: "agent/first-task", module: "agent", label: "First task", title: "Your first agent task" },
+  { path: "agent/tokens", module: "agent", label: "Tokens + Transformers", title: "Tokens and Transformers" },
   { path: "agent/attention", module: "agent", label: "Attention mechanism", title: "How attention uses context" },
   { path: "agent/position", module: "agent", label: "Position bias", title: "Position changes what gets used" },
   { path: "agent/budget", module: "agent", label: "Finite context", title: "Treat context as a finite engineering resource" },
   { path: "context/orient", module: "context", label: "Orient / repository", title: "Orient the repository" },
   { path: "context/ladder", module: "context", label: "Context Ladder", title: "Context Ladder" },
   { path: "context/summary", module: "context", label: "Context summary", title: "Context summary" },
-  { path: "research/problem", module: "research", label: "Problem", title: "The problem" },
+  { path: "context/contract", module: "context", label: "Task contract", title: "Build a task contract" },
+  { path: "research/problem", module: "research", label: "Problem", title: "The observed problem" },
   { path: "research/investigation", module: "research", label: "Investigation", title: "Investigation" },
   { path: "research/evidence", module: "research", label: "Evidence board", title: "Evidence board" },
   { path: "plan/critique", module: "plan", label: "Critique bad plan", title: "Critique the plan" },
+  { path: "plan/construct", module: "plan", label: "Construct a plan", title: "Construct the plan" },
   { path: "plan/approve", module: "plan", label: "Approve good plan", title: "Approve the plan" },
-  { path: "execution/controls", module: "execution", label: "Plan / goal / loop", title: "Plan vs /goal vs /loop" },
-  { path: "execution/goal", module: "execution", label: "/goal exercise", title: "The /goal exercise" },
-  { path: "execution/loop", module: "execution", label: "/loop example", title: "The /loop micro-example" },
+  { path: "execution/controls", module: "execution", label: "Plan / goal / schedule", title: "Plan, completion condition, and schedule" },
+  { path: "execution/goal", module: "execution", label: "Completion exercise", title: "Write a completion condition" },
+  { path: "execution/loop", module: "execution", label: "Recurring check", title: "Use recurrence only when time matters" },
   { path: "verification/goal", module: "verification", label: "Goal met?", title: "Goal met?" },
   { path: "verification/review", module: "verification", label: "Diff / test review", title: "Review the evidence" },
   { path: "verification/scope", module: "verification", label: "Scope-creep challenge", title: "Make the acceptance decision" },
@@ -35,27 +47,70 @@ const fullSequence = [
   { path: "controls/choose", module: "controls", label: "Choose the mechanism", title: "Choose the right mechanism" },
   { path: "controls/safety", module: "controls", label: "Safety layers", title: "Safety is layered" },
   { path: "context-agents/sources", module: "context-agents", label: "Memory and sources", title: "What persists, and where?" },
-  { path: "context-agents/hygiene", module: "context-agents", label: "Context hygiene", title: "Inspect, compact, or clear" },
+  { path: "context-agents/hygiene", module: "context-agents", label: "Context hygiene", title: "Inspect, compact, or start fresh" },
   { path: "context-agents/handoff", module: "context-agents", label: "Handoff / resume", title: "Continue without losing the thread" },
-  { path: "context-agents/recovery", module: "context-agents", label: "Rewind / branch", title: "Recover or explore safely" },
+  { path: "context-agents/recovery", module: "context-agents", label: "Recover / branch", title: "Recover or explore safely" },
   { path: "context-agents/parallel", module: "context-agents", label: "Parallel work", title: "Choose the right isolation boundary" },
   { path: "capstone/repository", module: "capstone", label: "New repository", title: "New repository" },
   { path: "capstone/investigation", module: "capstone", label: "Investigation", title: "Capstone investigation" },
   { path: "capstone/plan", module: "capstone", label: "Plan / execution", title: "Plan and execution" },
-  { path: "capstone/verification", module: "capstone", label: "Verification", title: "Capstone verification" }
+  { path: "capstone/evidence", module: "capstone", label: "Evidence review", title: "Review candidate evidence" },
+  { path: "capstone/verification", module: "capstone", label: "Verification", title: "Capstone verification" },
+  { path: "capstone/handoff", module: "capstone", label: "Handoff", title: "Capstone handoff" }
 ];
 
 const quickPaths = new Set([
-  "start", "agent", "agent/attention", "agent/position", "agent/budget", "context/ladder", "research/problem", "research/investigation",
+  "start", "agent", "agent/first-task", "agent/tokens", "agent/attention", "agent/position", "agent/budget", "context/ladder", "context/contract", "research/problem", "research/investigation",
   "plan/critique", "execution/controls", "execution/goal", "verification/scope",
   "controls/choose", "controls/safety", "context-agents/hygiene", "context-agents/handoff",
-  "context-agents/parallel", "capstone/investigation", "capstone/verification"
+  "context-agents/parallel", "capstone/investigation", "capstone/evidence", "capstone/handoff"
 ]);
 const quickSequence = fullSequence.filter(page => quickPaths.has(page.path));
 
 const esc = value => String(value).replace(/[&<>]/g, char => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[char]));
 const escAttr = value => String(value).replace(/[&<>"']/g, char => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
 const save = () => localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+
+function syncPlatformToUrl() {
+  const url = new URL(location.href);
+  if (state.platform === "generic") url.searchParams.delete("platform");
+  else url.searchParams.set("platform", state.platform);
+  history.replaceState(null, "", `${url.pathname}${url.search}${url.hash}`);
+}
+
+function setPlatform(platform) {
+  state.platform = normalizePlatform(platform);
+  save();
+  syncPlatformToUrl();
+}
+
+function platformNote(conceptId, { includeGeneric = false } = {}) {
+  const concept = platformConcepts[conceptId];
+  if (!concept) return "";
+  if (state.platform === "generic") {
+    if (!includeGeneric) return "";
+    return `<aside class="platform-note generic-note"><span class="tag">SHARED PATTERN</span><h3>${concept.label}</h3><strong>${concept.generic.command_or_surface}</strong><p>${concept.generic.short_explanation}</p><small>${concept.generic.caveat}</small></aside>`;
+  }
+
+  const ids = state.platform === "compare" ? ["claude", "codex"] : [state.platform];
+  if (state.platform === "compare") {
+    return `<aside class="platform-note compare-note"><div class="adapter-heading"><span class="tag">PLATFORM ADAPTERS</span><h3>${concept.label}</h3></div><div class="adapter-table" role="table" aria-label="${escAttr(concept.label)} platform comparison">${ids.map(id => {
+      const item = concept[id];
+      return `<div class="adapter-column" role="row"><span class="adapter-product">${platforms[id].label}</span><strong>${item.command_or_surface}</strong><p>${item.short_explanation}</p><small>${item.caveat}</small>${item.official_source ? `<a href="${item.official_source}" target="_blank" rel="noreferrer">Official source ↗</a>` : ""}<span class="adapter-meta">${item.maturity} · reviewed ${item.last_reviewed}</span></div>`;
+    }).join("")}</div></aside>`;
+  }
+
+  const item = concept[state.platform];
+  return `<aside class="platform-note"><div class="adapter-heading"><span class="tag green">${platforms[state.platform].label.toUpperCase()}</span><h3>${concept.label}</h3></div><strong>${item.command_or_surface}</strong><p>${item.short_explanation}</p><small>${item.caveat}</small>${item.official_source ? `<a href="${item.official_source}" target="_blank" rel="noreferrer">Official source ↗</a>` : ""}<span class="adapter-meta">${item.maturity} · reviewed ${item.last_reviewed}</span></aside>`;
+}
+
+function selectedPrompt(conceptId, fallback) {
+  const concept = platformConcepts[conceptId];
+  if (!concept) return fallback;
+  if (state.platform === "compare") return concept.generic.prompt || fallback;
+  return concept[state.platform]?.prompt || concept.generic.prompt || fallback;
+}
+
 const route = () => location.hash.replace(/^#\/?/, "") || "start";
 const lessonIndex = id => lessons.findIndex(item => item.id === id);
 const firstPageForModule = id => fullSequence.find(page => page.module === id)?.path || "start";
@@ -85,6 +140,7 @@ function isModuleFinal(page) {
 
 function renderNav() {
   const current = activePath();
+  if (platformSelect) platformSelect.value = state.platform;
   nav.innerHTML = lessons.map((lesson, index) => `
     <li>
       <a href="#/${firstPageForModule(lesson.id)}"
@@ -126,7 +182,7 @@ function shell(page, body) {
   if (index < 0) index = fullSequence.findIndex(item => item.path === page.path);
   const previous = sequence[Math.max(0, index - 1)];
   const next = sequence[Math.min(sequence.length - 1, index + 1)];
-  const finishing = page.path === "capstone/verification";
+  const finishing = page.path === "capstone/handoff";
   const shouldComplete = finishing || !next || page.module !== next.module;
   const previousButton = index > 0 ? `<a class="button ghost" href="#/${previous.path}">← Previous</a>` : `<span></span>`;
   const nextButton = finishing
@@ -140,7 +196,7 @@ function shell(page, body) {
       <p>${lesson.objective}</p>
     </div>
     ${body}
-    ${isModuleFinal(page) ? lessonFaq(page.module) + tryPrompt(page.module) : ""}
+    ${isModuleFinal(page) ? renderRetrievalCheck(page.module) + lessonFaq(page.module) + tryPrompt(page.module) : ""}
     <div class="lesson-footer">${previousButton}${nextButton}</div>`;
 }
 
@@ -167,7 +223,7 @@ const decisionFeedback = {
   attention: [
     ["strong", "Strong. Being inside the context window makes information available, not equally influential. Attention is selective across many heads and layers."],
     ["reasonable", "Not quite. Context capacity is not an equal-weight guarantee; relevant information can still be under-used."],
-    ["reasonable", "No. Context is working input. Claude Code memory is persisted separately and must be brought back into context to influence a turn."]
+    ["reasonable", "No. Context is working input. Persistent learned memory is stored separately and must become relevant context before it can influence a turn."]
   ],
   position: [
     ["strong", "Strong. In the classic lost-in-the-middle pattern, relevant information near the beginning or end is often used more reliably than information buried in the middle."],
@@ -192,7 +248,7 @@ const decisionFeedback = {
   execution: [
     ["strong", "Strong. A goal describes observable completion, including behavior, tests, and preserved constraints."],
     ["reasonable", "That is an implementation instruction. It belongs in the plan, not in the finish line."],
-    ["reasonable", "That is a schedule. It is a /loop-style instruction, not a completion condition."]
+    ["reasonable", "That is a schedule for another check, not a completion condition."]
   ],
   safety: [
     ["strong", "Strong. A sandbox constrains filesystem and network reach. Permission rules decide whether an action is authorized; the sandbox limits where it can act."],
@@ -201,13 +257,13 @@ const decisionFeedback = {
   ],
   "context-hygiene": [
     ["strong", "Strong. Use /compact when the session still matters but old logs and dead branches are crowding the working context. Give the summary a focus."],
-    ["reasonable", "/clear is better when you want an empty context and are willing to start a fresh conversation; the previous session remains resumable."],
-    ["reasonable", "/context diagnoses what is consuming the window. It helps you decide what to do, but it does not itself reduce the context."]
+    ["reasonable", "Starting fresh is better when the task changes or the previous context no longer helps."],
+    ["reasonable", "Inspection diagnoses what is consuming the working context. It helps you decide what to do, but it does not itself reduce context."]
   ],
   recovery: [
-    ["strong", "Strong. /branch preserves the original conversation while you try a different approach in a copied session."],
-    ["reasonable", "/rewind changes the current session state. Use it when you want to restore code or conversation, not when you want to keep both alternatives alive."],
-    ["reasonable", "Git can isolate source history, but it does not copy the Claude conversation. Session branching preserves the reasoning path as well."]
+    ["strong", "Strong. Branching preserves the original conversation while you try a different approach in a copied session."],
+    ["reasonable", "Restoring changes the current state. Use it when you want to return to an earlier checkpoint, not when you want to keep both alternatives alive."],
+    ["reasonable", "Git preserves source history, but it does not copy the reasoning context. Conversation branching preserves the reasoning path as well."]
   ],
   parallel: [
     ["strong", "Strong. Worktrees isolate file edits, so competing implementation approaches can proceed without colliding in one working tree."],
@@ -279,26 +335,33 @@ function start() {
     <section class="hero">
       <div class="hero-top">
         <div>
-          <span class="kicker">A self-paced engineering course</span>
-          <h1>Control the <em>agent</em>.</h1>
-          <p class="lead">Learn why context behaves the way it does, then apply a disciplined Claude Code workflow: build context, gather evidence, approve a plan, control execution, and verify before you accept.</p>
+          <span class="kicker">Tool-independent agentic coding</span>
+          <h1>Control the coding <em>agent</em>.</h1>
+          <p class="lead">Learn one durable engineering workflow, then translate it into Claude Code or Codex without making slash commands the lesson.</p>
         </div>
         <aside class="hero-aside" aria-label="Course outcomes">
           <strong>By the end, you can</strong>
-          <ul><li>explain why attention and context position matter</li><li>build useful repository context</li><li>separate evidence from assumptions</li><li>choose skills, agents, MCP and controls deliberately</li><li>manage long sessions and handoffs</li><li>verify before accepting a change</li></ul>
+          <ul><li>orient a repository before editing</li><li>separate evidence from assumptions</li><li>approve a bounded plan and finish line</li><li>control permissions and isolation</li><li>manage long sessions and handoffs</li><li>verify before accepting a change</li></ul>
         </aside>
       </div>
       ${resume}
-      <div class="callout subtle"><strong>Your learning contract</strong>You will make engineering decisions, inspect evidence, and get feedback. The exercises are deterministic and API-key free.</div>
+      <div class="callout subtle"><strong>Prerequisites</strong>No prior LLM, Claude Code, or Codex experience is required. Basic familiarity with source files and automated tests is recommended.</div>
+      <section class="platform-picker-panel" aria-labelledby="platform-picker-title">
+        <div><span class="tag">CHOOSE YOUR GUIDE</span><h2 id="platform-picker-title">Which coding agent are you using?</h2><p>The shared lesson and progress stay the same. You can switch at any time.</p></div>
+        <div class="platform-picker-grid">
+          ${Object.values(platforms).map(item => `<button class="platform-choice ${state.platform === item.id ? "active" : ""}" type="button" data-platform="${item.id}" aria-pressed="${state.platform === item.id}"><strong>${item.label}</strong><span>${item.description}</span></button>`).join("")}
+        </div>
+      </section>
+      <div class="callout subtle"><strong>Your learning contract</strong>The agent executes. You own the requirement, evidence, approval, and acceptance decision. Exercises remain deterministic and API-key free.</div>
       <div class="mode-grid">
-        <article class="card mode-card primary"><span class="tag">RECOMMENDED</span><h3>Full course</h3><p>All concepts, exercises, and the capstone · about 80–105 min</p><a class="button" data-mode="full" href="#/agent">Begin full course →</a></article>
-        <article class="card mode-card"><span class="tag">FAST</span><h3>Quick refresher</h3><p>A curated decision path through the same material · about 35–45 min</p><a class="button secondary" data-mode="quick" href="#/agent">Start refresher →</a></article>
+        <article class="card mode-card primary"><span class="tag">RECOMMENDED</span><h3>Full course</h3><p>All concepts, constructed exercises, retrieval checks, and the capstone · about 95–120 min</p><a class="button" data-mode="full" href="#/start/readiness">Begin full course →</a></article>
+        <article class="card mode-card"><span class="tag">FAST</span><h3>Quick refresher</h3><p>A curated decision path through the same material · about 40–50 min</p><a class="button secondary" data-mode="quick" href="#/agent">Start refresher →</a></article>
         <article class="card mode-card"><span class="tag">LOOK UP</span><h3>Reference</h3><p>Jump directly to a concept when you need it during real work.</p><a class="button secondary" href="#/reference">Browse reference →</a></article>
       </div>
       <div class="workflow-panel">
         <h2>The engineering loop you will practice</h2>
-        <div class="workflow" aria-label="Build context, research, plan, human review, execute, verify, human acceptance">
-          <div class="workflow-step">Build context</div><div class="workflow-step">Research</div><div class="workflow-step">Plan</div><div class="workflow-step human">Review<span class="human-mark">human gate</span></div><div class="workflow-step">Execute</div><div class="workflow-step">Verify</div><div class="workflow-step human">Accept<span class="human-mark">human gate</span></div>
+        <div class="workflow" aria-label="Build context, gather evidence, plan, human review, execute, verify, human acceptance">
+          <div class="workflow-step">Build context</div><div class="workflow-step">Gather evidence</div><div class="workflow-step">Plan</div><div class="workflow-step human">Review<span class="human-mark">human gate</span></div><div class="workflow-step">Execute</div><div class="workflow-step">Verify</div><div class="workflow-step human">Accept<span class="human-mark">human gate</span></div>
         </div>
       </div>
     </section>`;
@@ -311,13 +374,13 @@ function agent() {
         <span class="tag">CHAT</span><h2>Answers from existing context</h2>
         <p class="small">A chat model can explain or propose. It does not become an engineering agent merely because the prompt is longer.</p>
         <div class="chat-path"><span>Question</span><b>→</b><span>Model</span><b>→</b><span>Answer</span></div>
-        <div class="callout subtle"><strong>Key idea</strong>Tools do not make Claude infallible. They make work observable and give the next decision new evidence.</div>
+        <div class="callout subtle"><strong>Key idea</strong>Tools do not make an LLM infallible. They make work observable and give the next decision new evidence.</div>
       </div>
       <div>
         <span class="tag green">AGENT</span><h2>Observe → act → observe again</h2>
-        <p class="small">Read this as a cycle. Each tool result changes what Claude can reasonably do next.</p>
-        <div class="agent-loop" role="img" aria-label="Context informs Claude's decision. Claude uses a tool. The tool returns evidence. The evidence becomes context for the next decision.">
-          <div class="loop-step"><span class="step-number">1</span><div><strong>Context</strong><small>What Claude can see</small></div></div>
+        <p class="small">Read this as a cycle. Each tool result changes what the agent can reasonably do next.</p>
+        <div class="agent-loop" role="img" aria-label="Context informs the agent's decision. The agent uses a tool. The tool returns evidence. The evidence becomes context for the next decision.">
+          <div class="loop-step"><span class="step-number">1</span><div><strong>Context</strong><small>What the agent can see</small></div></div>
           <div class="loop-step"><span class="step-number">2</span><div><strong>Decide</strong><small>Choose the next useful action</small></div></div>
           <div class="loop-step"><span class="step-number">3</span><div><strong>Tool acts</strong><small>Read, search, test, edit</small></div></div>
           <div class="loop-step evidence-step"><span class="step-number">4</span><div><strong>Evidence</strong><small>Results become context</small></div></div>
@@ -449,8 +512,9 @@ function agentBudget() {
       <div><strong>Context conflict</strong><span>Old and new instructions disagree.</span></div>
     </div>
     <div class="response-map">
-      <span>When this happens…</span><strong>Build context deliberately → inspect <code>/context</code> → <code>/compact</code> useful history → <code>/clear</code> unrelated work → isolate research in subagents → hand off essential state.</strong>
+      <span>When this happens…</span><strong>Build context deliberately → inspect pressure → compact useful history → start unrelated work fresh → isolate noisy research → hand off essential state.</strong>
     </div>
+    ${platformNote("continuity")}
     <div class="callout"><strong>This is why the next module exists.</strong>The Context Ladder is not ceremony. It is a strategy for spending context on relevant evidence instead of volume.</div>
     ${researchLinks(["Effective context engineering for AI agents", "Claude Code context window"])}
   </div>`;
@@ -459,8 +523,8 @@ function agentBudget() {
 function contextOrient() {
   return `<div class="two-col">
     <div class="panel"><h2>Repository explorer</h2><p class="small">Orient before narrowing. Inspect only what helps you build the first map.</p>${repoBrowser(files, "README.md")}</div>
-    <div class="panel"><span class="tag">DECIDE</span><h2>What should Claude do first?</h2><p class="small">A strong first move creates orientation without flooding the context.</p>${choiceBlock("context", ["Inspect the README, runtime, test command, and major folders", "Read every file before naming a goal", "Refactor the repository structure first"])}
-    <div class="callout subtle"><strong>Orientation is not diagnosis.</strong>At this point you are learning the terrain, not guessing the bug.</div></div>
+    <div class="panel"><span class="tag">DECIDE</span><h2>What should the agent do first?</h2><p class="small">A strong first move creates orientation without flooding the context.</p>${choiceBlock("context", ["Inspect the README, runtime, test command, and major folders", "Read every file before naming a goal", "Refactor the repository structure first"])}
+    <div class="callout subtle"><strong>Orientation is not diagnosis.</strong>At this point you are learning the terrain, not guessing the bug.</div>${platformNote("orient")}</div>
   </div>`;
 }
 
@@ -525,13 +589,14 @@ function researchEvidence() {
     <div class="evidence">
       <div class="evidence-column"><h4>KNOWN</h4><ul><li>Expected total = ₹2,124</li><li>Current total = ₹2,160</li><li>Tax is calculated from ₹2,000</li></ul></div>
       <div class="evidence-column inferred"><h4>INFERRED</h4><ul><li>Fixed coupon ordering causes the ₹36 difference</li></ul></div>
+      <div class="evidence-column assumed"><h4>ASSUMED</h4><ul><li>The coupon should reduce the taxable subtotal</li></ul></div>
       <div class="evidence-column unverified"><h4>UNVERIFIED</h4><ul><li>Percentage discounts remain unchanged</li><li>Validation remains unchanged</li></ul></div>
     </div>
     <div class="causal-compare" aria-label="Current and expected calculation order">
       <div class="causal-lane bad"><h4>CURRENT PATH</h4><div class="causal-flow"><span>₹2,000 subtotal</span><b>→</b><span>tax ₹360</span><b>→</b><span>− ₹200</span><b>→</b><span>₹2,160</span></div></div>
       <div class="causal-lane good"><h4>EXPECTED PATH</h4><div class="causal-flow"><span>₹2,000 subtotal</span><b>→</b><span>− ₹200</span><b>→</b><span>tax ₹324</span><b>→</b><span>₹2,124</span></div></div>
     </div>
-    <div class="callout success"><strong>Research output</strong>You now have a causal explanation plus two preservation questions. That is enough to create a bounded plan.</div>
+    <div class="callout success"><strong>Investigation output</strong>You now have a causal explanation plus two preservation questions. That is enough to create a bounded plan.</div>
   </div>`;
 }
 
@@ -556,7 +621,7 @@ function planApprove() {
       <div class="control-track"><div class="control-node"><span>CHANGE</span><strong>Ordering</strong><small>Coupon reduces taxable amount</small></div><div class="control-arrow">→</div><div class="control-node"><span>PROVE</span><strong>Regression test</strong><small>₹2,124 case</small></div><div class="control-arrow">→</div><div class="control-node goal-node"><span>PRESERVE</span><strong>Neighbors</strong><small>Percent discounts + validation</small></div></div>
     </div>
     <div class="grid"><div class="card"><span class="tag">SCOPE</span><h3>Files likely affected</h3><p><code>src/calculator.js</code> and <code>tests/calculator.test.js</code>. No unrelated UI or API cleanup.</p></div><div class="card"><span class="tag">RISK</span><h3>What could regress?</h3><p>Percentage discounts and validation. Those become explicit verification targets.</p></div></div>
-    <div class="callout"><strong>Human approval gate</strong>Claude may propose this route. The engineer approves, changes, or rejects it before execution.</div>
+    <div class="callout"><strong>Human approval gate</strong>The agent may propose this route. The engineer approves, changes, or rejects it before execution.</div>
   </div>`;
 }
 
@@ -564,31 +629,34 @@ function executionControls() {
   return `<div class="panel"><h2>Three controls answer three different questions</h2><p>Keeping these separate prevents the execution instruction from swallowing the plan or the finish line.</p>
     <div class="control-three">
       <div class="control-card"><span class="tag">PLAN</span><div class="control-q">How?</div><p>Approved files, behavior change, boundaries, tests, and risks.</p></div>
-      <div class="control-card goal"><span class="tag green">/goal</span><div class="control-q">When done?</div><p>Observable conditions that tell Claude when the work can stop.</p></div>
-      <div class="control-card loop"><span class="tag amber">/loop</span><div class="control-q">When again?</div><p>A repeated schedule for polling or recurring checks.</p></div>
+      <div class="control-card goal"><span class="tag green">GOAL</span><div class="control-q">When done?</div><p>Observable conditions that tell the agent when the work can stop.</p></div>
+      <div class="control-card loop"><span class="tag amber">SCHEDULE</span><div class="control-q">When again?</div><p>A time or event that starts another check.</p></div>
     </div>
     <div class="callout subtle"><strong>Not interchangeable</strong>A plan can be approved while the goal is unmet. A goal can be met while the change is still awaiting human acceptance.</div>
+    ${platformNote("plan")}${platformNote("goal")}${platformNote("schedule")}
   </div>`;
 }
 
 function executionGoal() {
   return `<div class="panel"><h2>Write a finish line, not another implementation prompt</h2>
-    <div class="control-diagram" role="img" aria-label="The approved plan defines how. Execution produces evidence. The goal checks whether the finish line is met.">
-      <div class="control-track"><div class="control-node"><span>PLAN</span><strong>Approved route</strong><small>How?</small></div><div class="control-arrow">→</div><div class="control-node"><span>WORK</span><strong>Execute + observe</strong><small>Evidence</small></div><div class="control-arrow">→</div><div class="control-node goal-node"><span>/goal</span><strong>Finish line</strong><small>When done?</small></div></div>
+    <div class="control-diagram" role="img" aria-label="The approved plan defines how. Execution produces evidence. The completion condition checks whether the finish line is met.">
+      <div class="control-track"><div class="control-node"><span>PLAN</span><strong>Approved route</strong><small>How?</small></div><div class="control-arrow">→</div><div class="control-node"><span>WORK</span><strong>Execute + observe</strong><small>Evidence</small></div><div class="control-arrow">→</div><div class="control-node goal-node"><span>GOAL</span><strong>Finish line</strong><small>When done?</small></div></div>
       <div class="goal-branch"><strong>Goal met?</strong><span class="branch-no">NO ↺ Continue within plan</span><span class="branch-yes">YES → Stop for human verification</span></div>
     </div>
     <h3>Which option is a completion condition?</h3>
     ${choiceBlock("execution", ["The approved plan is implemented, the fixed-coupon case returns ₹2,124, existing tests pass, and validation behavior is unchanged.", "Open calculator.js and move the discount calculation before tax.", "Check CI every five minutes until it finishes."])}
+    ${platformNote("goal")}
   </div>`;
 }
 
 function executionLoop() {
-  return `<div class="panel"><h2>Use /loop for time-driven repetition</h2><p>A loop schedules another observation. It does not define what correctness means.</p>
+  return `<div class="panel"><h2>Use recurrence for time-driven work</h2><p>A recurring check schedules another observation. It does not define what correctness means.</p>
     <div class="control-diagram" role="img" aria-label="Check CI, decide whether it is finished, wait five minutes if not, and report when it is finished.">
       <div class="control-track"><div class="control-node"><span>1</span><strong>Check CI</strong><small>Observe status</small></div><div class="control-arrow">→</div><div class="control-node"><span>2</span><strong>Finished?</strong><small>Decision point</small></div></div>
       <div class="goal-branch"><span class="branch-no">NO → Wait 5 minutes ↺</span><span class="branch-yes">YES → Report status</span></div>
     </div>
-    <div class="callout warning"><strong>Do not force a loop into the calculator task.</strong>The calculator can be verified directly after the change. /loop is useful because CI is external and may finish later.</div>
+    <div class="callout warning"><strong>Do not force recurrence into the calculator task.</strong>The calculator can be verified directly after the change. Recurrence is useful here only because CI is external and may finish later.</div>
+    ${platformNote("schedule")}
   </div>`;
 }
 
@@ -596,7 +664,7 @@ function verificationGoal() {
   return `<div class="panel"><h2>Stopping and accepting are different decisions</h2>
     <div class="control-diagram"><div class="control-track"><div class="control-node goal-node"><span>AUTOMATED</span><strong>Goal met</strong><small>Completion evidence exists</small></div><div class="control-arrow">→</div><div class="control-node"><span>HUMAN</span><strong>Verify</strong><small>Diff · tests · scope · risk</small></div><div class="control-arrow">→</div><div class="control-node"><span>HUMAN</span><strong>Accept / reject</strong><small>Engineering judgment</small></div></div></div>
     <div class="callout"><strong>GOAL MET ≠ CHANGE ACCEPTED</strong>The agent can stop because its finish line holds. The engineer still decides whether the result belongs in the codebase.</div>
-    <div class="callout subtle"><strong>Claude Code also provides <code>/verify</code>.</strong>Use the bundled verification skill to exercise the running change when useful. It strengthens evidence; it does not replace human acceptance.</div>
+    ${platformNote("verify")}
   </div>`;
 }
 
@@ -628,36 +696,36 @@ function verificationScope() {
 }
 
 function controlsMap() {
-  return `<div class="panel"><h2>Extend the agent at the layer that matches the job</h2><p>Claude Code has several extension points. The useful question is not “which feature is powerful?” but “what problem am I solving?”</p>
-    <div class="extension-map" role="img" aria-label="Persistent guidance, on-demand knowledge and tools, isolated workers, lifecycle automation, and packaging extend different parts of Claude Code.">
-      <div class="extension-band"><span class="band-label">PERSISTENT GUIDANCE</span><div class="extension-items"><div class="feature-tile"><strong>CLAUDE.md</strong><small>Always-relevant project conventions</small></div><div class="feature-tile"><strong>Rules</strong><small>Path-scoped guidance loaded when relevant</small></div></div></div>
-      <div class="extension-band"><span class="band-label">ON DEMAND</span><div class="extension-items"><div class="feature-tile"><strong>Skills</strong><small>Reusable knowledge + workflows</small></div><div class="feature-tile"><strong>MCP</strong><small>External data + actions</small></div><div class="feature-tile"><strong>Subagents</strong><small>Isolated focused work</small></div><div class="feature-tile"><strong>Code intelligence</strong><small>Symbol navigation + diagnostics</small></div></div></div>
-      <div class="extension-band"><span class="band-label">BEHAVIOR / AUTOMATION</span><div class="extension-items"><div class="feature-tile"><strong>Output style</strong><small>Default role, tone, response format</small></div><div class="feature-tile"><strong>Hooks</strong><small>Lifecycle-triggered deterministic actions</small></div><div class="feature-tile package"><strong>Plugins</strong><small>Package skills, hooks, agents, MCP for reuse</small></div></div></div>
+  return `<div class="panel"><h2>Extend the agent at the layer that matches the job</h2><p>Start with the engineering responsibility. Product names and file formats come second.</p>
+    <div class="extension-map" role="img" aria-label="Project guidance, reusable procedures, external capabilities, focused workers, lifecycle automation, authorization, isolation, and packaging solve different responsibilities.">
+      <div class="extension-band"><span class="band-label">GUIDANCE</span><div class="extension-items"><div class="feature-tile"><strong>Project guidance</strong><small>Stable repository conventions</small></div><div class="feature-tile"><strong>Path-scoped guidance</strong><small>Instructions that apply only near matching code</small></div></div></div>
+      <div class="extension-band"><span class="band-label">ON DEMAND</span><div class="extension-items"><div class="feature-tile"><strong>Skill</strong><small>Reusable knowledge + procedure</small></div><div class="feature-tile"><strong>MCP</strong><small>Trusted external data + actions</small></div><div class="feature-tile"><strong>Subagent</strong><small>Bounded work in isolated context</small></div></div></div>
+      <div class="extension-band"><span class="band-label">CONTROL</span><div class="extension-items"><div class="feature-tile"><strong>Hook</strong><small>Deterministic lifecycle action</small></div><div class="feature-tile"><strong>Approval policy</strong><small>Authorization boundary</small></div><div class="feature-tile"><strong>Sandbox / worktree</strong><small>Reach and edit isolation</small></div><div class="feature-tile package"><strong>Plugin</strong><small>Package reusable capabilities</small></div></div></div>
     </div>
-    <div class="callout subtle"><strong>Start small.</strong>Use CLAUDE.md for stable conventions. Add another mechanism only when its specific trigger appears.</div>
-    <div class="callout"><strong>The slash menu mixes mechanisms.</strong>Some entries are built-in commands such as <code>/compact</code>; others are bundled skills such as <code>/loop</code>, <code>/debug</code>, <code>/code-review</code>, and <code>/verify</code>. Learn the behavior, not just the slash syntax.</div>
+    <div class="callout subtle"><strong>Start small.</strong>Use concise project guidance for stable conventions. Add another mechanism only when its responsibility appears repeatedly.</div>
+    ${platformNote("guidance")}${platformNote("permissions")}
   </div>`;
 }
 
 function extensionClassifierRow(text, id) {
-  return `<div class="classifier-row"><p>${text}</p><select data-extension-id="${id}" aria-label="Choose mechanism: ${escAttr(text)}"><option value="">Choose…</option><option value="claude">CLAUDE.md</option><option value="rule">Rule</option><option value="skill">Skill</option><option value="output">Output style</option><option value="mcp">MCP</option><option value="subagent">Subagent</option><option value="hook">Hook</option><option value="plugin">Plugin</option></select></div>`;
+  return `<div class="classifier-row"><p>${text}</p><select data-extension-id="${id}" aria-label="Choose mechanism: ${escAttr(text)}"><option value="">Choose…</option><option value="guidance">Project guidance</option><option value="scope">Path-scoped guidance</option><option value="skill">Skill</option><option value="mcp">MCP</option><option value="subagent">Subagent</option><option value="hook">Hook</option><option value="sandbox">Sandbox / worktree</option><option value="plugin">Plugin</option></select></div>`;
 }
 
 function controlsChoose() {
   return `<div class="panel"><span class="tag">PRACTICE</span><h2>Choose by responsibility, not by feature name</h2><p>Each mechanism has a different loading model or control boundary.</p>
     <div class="classifier">
       ${extensionClassifierRow("Always use pnpm and run the repository test command before reporting completion.", "e1")}
-      ${extensionClassifierRow("Apply API-specific guidance only when Claude works under src/api/**.", "e2")}
+      ${extensionClassifierRow("Apply API-specific guidance only when the agent works under src/api/**.", "e2")}
       ${extensionClassifierRow("Create a reusable release checklist that can be invoked as /release.", "e3")}
-      ${extensionClassifierRow("Make Claude explain implementation choices in a teaching-oriented style every turn.", "e4")}
-      ${extensionClassifierRow("Let Claude query Jira, a database, or a browser through an external integration.", "e5")}
+      ${extensionClassifierRow("Let the agent query Jira, a database, or a browser through an external integration.", "e4")}
       ${extensionClassifierRow("Investigate a security concern in isolated context and return concise findings.", "e6")}
       ${extensionClassifierRow("Run eslint automatically after every matching file edit.", "e7")}
       ${extensionClassifierRow("Distribute a team setup containing skills, hooks, agents, and MCP servers.", "e8")}
+      ${extensionClassifierRow("Run a competing implementation without letting its edits collide with the current work.", "e9")}
     </div>
     <button class="button" id="check-extensions" type="button" style="margin-top:14px">Check mechanisms</button>
     <div class="feedback" id="extensions-feedback" aria-live="polite" hidden></div>
-    <div class="callout subtle"><strong>Two distinctions worth remembering</strong>A skill is reusable task knowledge/workflow; a subagent is a separate worker/context. An output style shapes responses every turn; CLAUDE.md carries project guidance.</div>
+    <div class="callout subtle"><strong>Two distinctions worth remembering</strong>A skill is reusable task knowledge or procedure; a subagent is a separate worker with isolated context. Project guidance shapes repository work; approval policy and sandboxing control action.</div>
   </div>`;
 }
 
@@ -666,7 +734,7 @@ function controlsSafety() {
     <div class="safety-stack" role="img" aria-label="Project trust controls whether repository configuration is trusted. Tools provide capability. Permissions authorize actions. Sandbox limits filesystem and network reach. Hooks can enforce lifecycle checks.">
       <div class="safety-row trust"><span>PROJECT TRUST</span><strong>May repository-supplied configuration load?</strong></div>
       <div class="safety-arrow">↓</div>
-      <div class="safety-row"><span>TOOLS</span><strong>What can Claude attempt?</strong></div>
+      <div class="safety-row"><span>TOOLS</span><strong>What can the agent attempt?</strong></div>
       <div class="safety-arrow">↓</div>
       <div class="safety-row"><span>PERMISSIONS</span><strong>Is this action authorized?</strong></div>
       <div class="safety-arrow">↓</div>
@@ -678,36 +746,38 @@ function controlsSafety() {
     ${choiceBlock("safety", ["Sandbox", "Permission rule", "Hook"])}
     <div class="callout subtle"><strong>Permission mode vs permission rule</strong>The mode sets the session's baseline approval behavior; rules add fine-grained allow / ask / deny patterns. Neither is the same as sandbox isolation.</div>
     <div class="callout warning"><strong>Treat tool output as untrusted input.</strong>Files, web pages, and external tools can contain prompt-injection attempts. Trust, permissions, sandboxing, and human review work together.</div>
+    ${platformNote("permissions")}${platformNote("rules", { includeGeneric: true })}
   </div>`;
 }
 
 function contextSources() {
-  return `<div class="panel"><h2>Separate durable guidance, learned memory, and working context</h2><p>These all influence Claude, but they differ in who writes them, when they load, and how long they should live.</p>
+  return `<div class="panel"><h2>Separate durable guidance, learned memory, and working context</h2><p>These all influence an agent, but they differ in who writes them, when they load, and how long they should live.</p>
     <div class="memory-compare">
-      <div class="memory-card"><span class="tag">HUMAN-WRITTEN</span><h3>CLAUDE.md</h3><p>Stable project conventions and instructions that should be present every session.</p></div>
-      <div class="memory-card"><span class="tag">PATH-SCOPED</span><h3>Rules</h3><p>Modular guidance that becomes relevant only for matching paths, keeping context leaner.</p></div>
-      <div class="memory-card"><span class="tag green">CLAUDE-WRITTEN</span><h3>Auto memory</h3><p>Useful repository-specific discoveries Claude records across sessions.</p></div>
+      <div class="memory-card"><span class="tag">HUMAN-WRITTEN</span><h3>Project guidance</h3><p>Stable, versioned conventions and checks that should guide repository work.</p></div>
+      <div class="memory-card"><span class="tag">PATH-SCOPED</span><h3>Focused guidance</h3><p>Instructions that apply only near matching files, keeping broader context lean.</p></div>
+      <div class="memory-card"><span class="tag green">LEARNED</span><h3>Persistent learned context</h3><p>Useful discoveries retained across sessions. Helpful context, but not an enforcement boundary.</p></div>
     </div>
     <div class="context-map" role="img" aria-label="Persistent guidance, auto memory, conversation, loaded skills, tool evidence, and the current goal contribute to working context.">
       <div class="context-sources">
-        <div class="context-source"><strong>Persistent guidance</strong><small>CLAUDE.md + relevant rules</small></div>
-        <div class="context-source"><strong>Auto memory</strong><small>Claude-written repository knowledge</small></div>
+        <div class="context-source"><strong>Persistent guidance</strong><small>Human-written project expectations</small></div>
+        <div class="context-source"><strong>Learned context</strong><small>Retained repository knowledge</small></div>
         <div class="context-source"><strong>Conversation</strong><small>Current decisions and requests</small></div>
         <div class="context-source"><strong>Loaded skills</strong><small>Task-specific instructions when relevant</small></div>
         <div class="context-source"><strong>Tool evidence</strong><small>Files, tests, command results</small></div>
         <div class="context-source"><strong>Current goal</strong><small>What makes evidence relevant</small></div>
-      </div><div class="context-arrow" aria-hidden="true">→</div><div class="context-target"><strong>Working context</strong><span class="small">What Claude can use for the next decision</span></div>
+      </div><div class="context-arrow" aria-hidden="true">→</div><div class="context-target"><strong>Working context</strong><span class="small">What the agent can use for the next decision</span></div>
     </div>
-    <div class="callout subtle"><strong>Do not use memory as policy.</strong>Stable team expectations belong in versioned project guidance; auto memory is useful learned context, not an enforcement boundary.</div>
+    <div class="callout subtle"><strong>Do not use memory as policy.</strong>Stable team expectations belong in versioned project guidance; learned memory is useful context, not an enforcement boundary.</div>
+    ${platformNote("guidance")}
   </div>`;
 }
 
 function contextHygiene() {
-  return `<div class="panel"><h2>Inspect, compact, or clear—three different operations</h2><p>Long sessions need explicit context hygiene. Choose based on whether you need diagnosis, compression, or a fresh context.</p>
+  return `<div class="panel"><h2>Inspect, compact, or start fresh—three different operations</h2><p>Long sessions need explicit context hygiene. Choose based on whether you need diagnosis, compression, or a fresh context.</p>
     <div class="control-three">
-      <div class="control-card"><span class="tag">/context</span><div class="control-q">What is using space?</div><p>Inspect the current context before deciding whether cleanup is needed.</p></div>
-      <div class="control-card goal"><span class="tag green">/compact</span><div class="control-q">Keep the thread, shrink history</div><p>Replace older conversation with a focused summary and continue the same engineering task.</p></div>
-      <div class="control-card loop"><span class="tag amber">/clear</span><div class="control-q">Start fresh</div><p>Begin with an empty context; the previous conversation remains available to resume.</p></div>
+      <div class="control-card"><span class="tag">INSPECT</span><div class="control-q">What is consuming attention?</div><p>Inspect the current working state before deciding whether cleanup is needed.</p></div>
+      <div class="control-card goal"><span class="tag green">COMPACT</span><div class="control-q">Keep the thread, shrink history</div><p>Replace older conversation with a focused summary and continue the same coherent task.</p></div>
+      <div class="control-card loop"><span class="tag amber">START FRESH</span><div class="control-q">Change the task boundary</div><p>Begin with clean context when the task changes or the old state no longer helps.</p></div>
     </div>
     <div class="context-meter" aria-label="Illustrative noisy context">
       <div class="context-row keep"><span>Approved plan</span><div class="context-bar"><span style="width:82%"></span></div></div>
@@ -716,18 +786,19 @@ function contextHygiene() {
       <div class="context-row"><span>Dead hypotheses</span><div class="context-bar"><span style="width:58%"></span></div></div>
     </div>
     <h3>A long debugging session is still useful, but old logs dominate the window. What now?</h3>
-    ${choiceBlock("context-hygiene", ["/compact — preserve the approved plan, root-cause evidence, open risks, and next action", "/clear — discard the current context and restart immediately", "/context — inspect usage and assume that inspection alone fixes it"])}
-    <div class="prompt-box">/compact keep the approved plan, root-cause evidence, unresolved risks, and next action</div>
-    <div class="callout subtle"><strong>Why this works</strong>Module 01 showed the underlying limitation: context capacity is not equal attention. <code>/compact</code> is a practical way to increase signal density while preserving the thread that still matters.</div>
+    ${choiceBlock("context-hygiene", ["Compact the thread while preserving the approved plan, root-cause evidence, open risks, and next action", "Discard the entire task state immediately", "Inspect usage and assume that inspection alone fixes it"])}
+    <div class="prompt-box">Compact this thread. Preserve the approved plan, root-cause evidence, unresolved risks, and next action.</div>
+    <div class="callout subtle"><strong>Why this works</strong>Module 01 showed the underlying limitation: context capacity is not equal attention. Compaction increases signal density while preserving the thread that still matters.</div>
+    ${platformNote("continuity")}
   </div>`;
 }
 
 function contextHandoff() {
   return `<div class="panel"><h2>A resumable session and a good handoff solve different problems</h2><p>Resume keeps the conversation. A handoff makes the engineering state understandable to a fresh session or another engineer.</p>
     <div class="split">
-      <div class="card"><span class="tag">SAME THREAD</span><h3>Name + resume</h3><pre class="mono">/rename coupon-tax-fix
-/recap
-/resume coupon-tax-fix</pre><p>Use a name to make the session findable, <code>/recap</code> for a quick orientation summary, and <code>/resume</code> to continue the stored conversation.</p></div>
+      <div class="card"><span class="tag">SAME THREAD</span><h3>Name + resume</h3><pre class="mono">NAME  coupon-tax-fix
+STATE same coherent task
+ACTION resume the stored conversation</pre><p>Use a clear name to make the session findable. Resume when the task and working assumptions remain coherent.</p></div>
       <div class="card"><span class="tag green">FRESH READER</span><h3>Structured handoff</h3><pre class="mono">GOAL
 CURRENT STATE
 DECISIONS
@@ -738,20 +809,22 @@ OPEN RISKS
 NEXT ACTION</pre><p>Use when someone—or a fresh agent—must reconstruct the state without rereading the whole transcript.</p></div>
     </div>
     <div class="handoff-flow" role="img" aria-label="Long session becomes a compact structured handoff that a new session or another engineer can use."><span>Long working session</span><b>→</b><span class="focus">Handoff</span><b>→</b><span>Fresh session / engineer</span></div>
-    <div class="callout subtle"><strong>Recap, export, and handoff are different.</strong><code>/recap</code> gives a short session summary; <code>/export</code> produces a readable transcript. A good handoff deliberately surfaces the goal, decisions, evidence, risks, and next action for a fresh reader.</div>
+    <div class="callout subtle"><strong>Summary, transcript, and handoff are different.</strong>A summary compresses a session; a transcript preserves it. A good handoff deliberately surfaces the goal, decisions, evidence, risks, and next action for a fresh reader.</div>
+    ${platformNote("continuity")}
   </div>`;
 }
 
 function contextRecovery() {
   return `<div class="panel"><h2>Recover state without confusing checkpoints, branches, and git</h2><p>Use the mechanism that matches whether you want to restore, explore an alternative, or preserve durable source history.</p>
     <div class="recovery-grid">
-      <div class="card"><span class="tag">/rewind</span><h3>Restore or summarize</h3><p>Return code, conversation, or both to an earlier checkpoint—or summarize part of the session.</p></div>
-      <div class="card"><span class="tag green">/branch</span><h3>Try another reasoning path</h3><p>Copy the conversation into a new session while leaving the original path intact.</p></div>
-      <div class="card"><span class="tag amber">Git</span><h3>Durable source history</h3><p>Version-control boundary for code. Claude checkpoints are convenient session recovery, not a replacement for git.</p></div>
+      <div class="card"><span class="tag">RESTORE</span><h3>Return to a checkpoint</h3><p>Restore code, conversation, or both only when the product supports a trustworthy checkpoint for that state.</p></div>
+      <div class="card"><span class="tag green">BRANCH</span><h3>Try another reasoning path</h3><p>Copy the conversation into a new branch while leaving the original path intact.</p></div>
+      <div class="card"><span class="tag amber">GIT</span><h3>Durable source history</h3><p>Use version control as the durable source-history boundary. Product recovery controls do not replace it.</p></div>
     </div>
     <h3>You want to try a different implementation idea without losing the current conversation. What should you use?</h3>
-    ${choiceBlock("recovery", ["/branch", "/rewind", "Only git checkout; the conversation does not matter"])}
-    <div class="callout warning"><strong>Checkpoint limitation</strong>Checkpointing tracks edits made through Claude's file-editing tools. File changes performed through Bash are not guaranteed to be rewindable.</div>
+    ${choiceBlock("recovery", ["Branch the conversation", "Restore an earlier checkpoint", "Only switch the Git branch; the reasoning context does not matter"])}
+    <div class="callout warning"><strong>Verify recovery semantics.</strong>Checkpoint coverage differs by product and action. Keep important source history in Git and inspect what a restore will change.</div>
+    ${platformNote("continuity")}
   </div>`;
 }
 
@@ -760,11 +833,12 @@ function contextParallel() {
     <div class="parallel-map">
       <div class="parallel-card"><span class="tag">SUBAGENT</span><h3>Isolate thinking</h3><p>Focused worker in its own context that returns a summary to the parent session.</p><small>Best for research, review, focused analysis.</small></div>
       <div class="parallel-card"><span class="tag green">WORKTREE</span><h3>Isolate edits</h3><p>Separate git working tree and branch, so parallel implementation work does not collide.</p><small>Best for competing or independent code changes.</small></div>
-      <div class="parallel-card"><span class="tag amber">AGENT TEAM</span><h3>Coordinate sessions</h3><p>Multiple independent sessions with shared task coordination and peer communication.</p><small>Advanced / experimental; use when coordination justifies the cost.</small></div>
+      <div class="parallel-card"><span class="tag amber">PARALLEL SESSIONS</span><h3>Coordinate independent work</h3><p>Multiple sessions require explicit ownership, merge boundaries, and a final integrator.</p><small>Use only when the work is genuinely independent.</small></div>
     </div>
     <h3>Two competing implementation approaches may edit the same files. What boundary matters most?</h3>
     ${choiceBlock("parallel", ["Separate worktrees / sessions so file edits are isolated", "Several parallel writers in the same working tree", "A research subagent alone, with both implementations still writing to one tree"])}
-    <div class="callout subtle"><strong>Rule of thumb</strong>Subagent = context isolation. Worktree = edit isolation. Agent team = coordinated independent sessions.</div>
+    <div class="callout subtle"><strong>Rule of thumb</strong>Subagent = context isolation. Worktree = edit isolation. Parallel sessions = coordination overhead.</div>
+    ${platformNote("continuity")}
   </div>`;
 }
 
@@ -786,19 +860,19 @@ function capstonePlan() {
   return `<div class="panel"><h2>Clarification turns ambiguity into a contract</h2><div class="callout success"><strong>Product clarification</strong>Warning begins after 20 seconds; stale remains after 30 seconds; return the string <code>"warning"</code>; the HTTP response shape remains <code>{ status }</code>.</div>
     <h3>Which plan is the smallest coherent change?</h3>
     ${choiceBlock("capstone-plan", ["Update status thresholds in monitor.js, add healthy/warning/stale boundary tests, and preserve the API response shape", "Rewrite the monitor, API layer, and dashboard around a new status object", "Change the threshold logic now; tests can be added later if something breaks"])}
-    <div class="control-diagram"><div class="control-track"><div class="control-node"><span>PLAN</span><strong>Bounded change</strong><small>How?</small></div><div class="control-arrow">→</div><div class="control-node goal-node"><span>/goal</span><strong>Healthy / warning / stale tests pass</strong><small>When done?</small></div></div></div>
+    <div class="control-diagram"><div class="control-track"><div class="control-node"><span>PLAN</span><strong>Bounded change</strong><small>How?</small></div><div class="control-arrow">→</div><div class="control-node goal-node"><span>GOAL</span><strong>Healthy / warning / stale tests pass</strong><small>When done?</small></div></div></div>
+    ${platformNote("goal")}
   </div>`;
 }
 
 function capstoneVerification() {
-  return `<div class="panel"><h2>Finish with an engineering acceptance review</h2><p>The capstone is complete only when requirement, plan, implementation evidence, and scope agree.</p>
+  return `<div class="panel"><h2>Verify the corrected candidate</h2><p>The review was acted on: the unrelated API field was removed and exact boundary coverage was added.</p>
     <div class="grid-3">
       <div class="card"><span class="tag">REQUIREMENT</span><h3>Explicit?</h3><p>Warning >20s, stale >30s, response shape unchanged.</p></div>
-      <div class="card"><span class="tag">EVIDENCE</span><h3>Proven?</h3><p>Boundary tests cover healthy, warning, and stale.</p></div>
-      <div class="card"><span class="tag">SCOPE</span><h3>Clean?</h3><p>No unrelated API or dashboard changes.</p></div>
+      <div class="card"><span class="tag">EVIDENCE</span><h3>Proven?</h3><p>Tests cover 20s, just over 20s, 30s, and just over 30s.</p></div>
+      <div class="card"><span class="tag">SCOPE</span><h3>Clean?</h3><p>Final diff changes monitor logic and tests only; <code>{ status }</code> is preserved.</p></div>
     </div>
-    <div class="callout success"><strong>Transfer complete</strong>The reusable skill is not the calculator fix. It is the loop: context → evidence → plan → approval → execution → verification → acceptance.</div>
-    <div class="workflow" style="margin-top:16px" aria-label="Context, research, plan, review, execute, verify, accept"><div class="workflow-step">Context</div><div class="workflow-step">Research</div><div class="workflow-step">Plan</div><div class="workflow-step human">Review<span class="human-mark">human</span></div><div class="workflow-step">Execute</div><div class="workflow-step">Verify</div><div class="workflow-step human">Accept<span class="human-mark">human</span></div></div>
+    <div class="callout success"><strong>Completion condition met</strong>The candidate is ready for the engineer's acceptance decision and a durable handoff.</div>
   </div>`;
 }
 
@@ -807,10 +881,10 @@ const prompts = {
   context: "Orient this repository first. Summarize its purpose, runtime, test command, major folders, and the files relevant to the current goal. Do not edit anything.",
   research: "Investigate why the fixed-coupon scenario returns ₹2,160 instead of ₹2,124. Trace the calculation and gather evidence before editing.",
   plan: "Propose the smallest coherent plan for the fixed-coupon defect. Name files, exact behavior change, preserved behavior, risks, and verification. Do not implement yet.",
-  execution: "/goal The approved plan is implemented; the ₹2,000 subtotal with a ₹200 fixed coupon and 18% tax returns ₹2,124; existing tests pass; validation behavior remains unchanged.",
+  execution: "The approved plan is implemented; the ₹2,000 subtotal with a ₹200 fixed coupon and 18% tax returns ₹2,124; existing tests pass; validation behavior remains unchanged.",
   verification: "Verify the implementation against the approved plan. Review the diff, tests, goal evidence, scope, and risks. Call out any unrelated changes.",
-  controls: "Review this repository setup. Decide what belongs in CLAUDE.md, rules, skills, output styles, MCP, subagents, hooks, permissions, sandboxing, or a plugin. Explain why.",
-  "context-agents": "Review this long-running session. Recommend what belongs in persistent guidance or memory, whether to /context, /compact, /clear, resume, branch, or hand off, and whether parallel work needs a subagent or worktree.",
+  controls: "Review this repository setup. Classify each need as project guidance, a reusable skill, external capability, focused subagent, lifecycle hook, approval policy, sandbox or worktree isolation, or plugin packaging. Explain why.",
+  "context-agents": "Review this long-running session. Recommend what to keep as project guidance or learned context, whether to inspect, compact, start fresh, resume, branch, or hand off, and whether parallel work needs context isolation or edit isolation.",
   capstone: "Orient this repository and investigate the new warning-state request. Identify any missing product contract before proposing code changes."
 };
 
@@ -818,14 +892,14 @@ const faqData = {
   agent: [
     ["What makes an agent different from chat?", "The agent can use tools, observe results, and use those results to choose another action."],
     ["Is attention the same as the context window?", "No. The context window is working capacity; attention is an internal mechanism for selectively combining information within that context."],
-    ["Does information being present mean Claude will use it reliably?", "No. Retrieval, position, competing context, and reasoning all affect whether information influences the next action."],
+    ["Does information being present mean the agent will use it reliably?", "No. Retrieval, position, competing context, and reasoning all affect whether information influences the next action."],
     ["Is the U-curve universal?", "No. It is a well-established positional-performance pattern on long-context tasks, not a law that every model and task follows exactly."],
     ["What is the J-like pattern?", "A reported recency-dominant regime at very long relative input lengths where primacy weakens while end-of-context performance remains stronger."],
     ["What is context rot?", "A broad degradation in recall or precision as context grows. It is why capacity should be treated as a finite engineering resource rather than a target to fill."],
     ["Where does the engineer fit?", "The engineer curates context, sets boundaries, reviews plans, controls permissions, and accepts or rejects the result."]
   ],
   context: [
-    ["Should Claude read the whole repository?", "Usually no. Orient broadly, then narrow to evidence relevant to the current goal."],
+    ["Should the agent read the whole repository?", "Usually no. Orient broadly, then narrow to evidence relevant to the current goal."],
     ["How do I know context is sufficient?", "You can name where the behavior lives, how it flows, what must remain stable, and what is still unknown."],
     ["What belongs in the summary?", "Goal, relevant files, behavior flow, constraints, decisions, evidence, and open questions."],
     ["Why not start with a fix prompt?", "Because without context the agent can optimize the wrong behavior or miss an existing contract."]
@@ -843,8 +917,8 @@ const faqData = {
     ["What is a scope smell?", "Unrelated cleanup, new abstractions, or API changes that are not required by the goal."]
   ],
   execution: [
-    ["How are plan and /goal different?", "The plan defines how to work; /goal defines observable conditions for stopping."],
-    ["When should I use /loop?", "For time-driven repetition such as polling CI or checking an external process periodically."],
+    ["How are plan and goal different?", "The plan defines how to work; the goal defines observable conditions for stopping."],
+    ["When should I schedule recurrence?", "For time-driven repetition such as polling CI or checking an external process periodically."],
     ["Does a goal approve the result?", "No. Goal completion returns you to human verification and acceptance."],
     ["What if execution needs a materially different plan?", "Stop and return to human review instead of silently expanding scope."]
   ],
@@ -855,22 +929,20 @@ const faqData = {
     ["What does acceptance add?", "It applies engineering judgment after automated completion conditions are satisfied."]
   ],
   controls: [
-    ["Skill or CLAUDE.md?", "Use CLAUDE.md for stable always-relevant project guidance; use a skill for reusable knowledge or a workflow that should load or run when relevant."],
+    ["Skill or project guidance?", "Use project guidance for stable repository expectations; use a skill for reusable knowledge or a procedure that loads when relevant."],
     ["Skill or subagent?", "A skill is reusable instructions/knowledge; a subagent is a separate worker with isolated context and its own tool/permission configuration."],
-    ["What is an output style for?", "It changes Claude's default role, tone, or response format every turn. It is not the right place for project-specific architecture rules."],
-    ["MCP or built-in tool?", "Built-in tools are part of Claude Code's base harness. MCP adds external tools, services, resources, or prompts that are not built in."],
-    ["MCP or plugin?", "MCP connects Claude to external services. A plugin is a packaging/distribution layer that can bundle MCP servers, skills, hooks, and agents."],
-    ["What about .claude/commands?", "Existing custom command files still work, but skills are the recommended home for reusable multi-step commands and workflows."],
+    ["MCP or built-in tool?", "Built-in tools are part of the agent harness. MCP adds trusted external tools, services, resources, or prompts."],
+    ["MCP or plugin?", "MCP connects the agent to external services. A plugin packages reusable capabilities for distribution."],
     ["Permissions or sandbox?", "Permissions decide whether actions are authorized; sandboxing constrains Bash filesystem and network reach."],
-    ["Why project trust?", "Repository configuration can itself influence agent behavior. Trust gates project-supplied configuration before Claude Code loads it fully."]
+    ["Why project trust?", "Repository configuration can influence agent behavior. Trust gates project-supplied configuration before the agent loads or executes it."]
   ],
   "context-agents": [
-    ["CLAUDE.md, rules, or auto memory?", "CLAUDE.md holds stable human-written conventions; rules can be path-scoped; auto memory stores useful Claude-written repository knowledge across sessions."],
-    ["/context, /compact, or /clear?", "/context inspects usage; /compact summarizes while keeping the thread; /clear starts a fresh context while leaving the previous session resumable."],
+    ["Project guidance or learned memory?", "Project guidance holds stable human-written conventions; learned memory stores useful discoveries but is not an enforcement boundary."],
+    ["Inspect, compact, or start fresh?", "Inspect diagnoses the state; compaction preserves a coherent thread with less history; starting fresh creates a clean task boundary."],
     ["What makes a good handoff?", "Goal, current state, decisions, evidence, changed files, tests, open risks, and the next action."],
-    ["/rewind or /branch?", "Rewind restores or summarizes the current session; branch copies the conversation so you can explore an alternative without losing the original."],
+    ["Restore or branch?", "Restore returns to an earlier state; branching copies the conversation so you can explore an alternative without losing the original."],
     ["Subagent or worktree?", "Subagents isolate reasoning context. Worktrees isolate file edits. Use both when the task needs both boundaries."],
-    ["Are agent teams the default?", "No. They add coordination overhead and are an advanced/experimental option for genuinely parallel independent sessions."]
+    ["Are parallel sessions the default?", "No. They add coordination overhead. Use them only for genuinely independent work with explicit ownership and integration."]
   ],
   capstone: [
     ["Why use a different repository?", "It tests transfer of the workflow rather than memory of the calculator solution."],
@@ -887,9 +959,12 @@ function lessonFaq(id) {
 }
 
 function tryPrompt(id) {
-  const prompt = prompts[id];
+  let prompt = prompts[id];
   if (!prompt) return "";
-  return `<div class="try-card"><div><span class="tag green">TRY THIS IN CLAUDE CODE</span><p>${esc(prompt)}</p></div><button class="button secondary" data-copy="${escAttr(prompt)}" type="button">Copy prompt</button></div>`;
+  if (id === "context") prompt = selectedPrompt("orient", prompt);
+  if (id === "execution" && ["claude", "codex"].includes(state.platform)) prompt = `/goal ${prompt}`;
+  const label = state.platform === "compare" ? "TRY IN EITHER AGENT" : state.platform === "generic" ? "PRODUCT-NEUTRAL PROMPT" : `TRY IN ${platforms[state.platform].label.toUpperCase()}`;
+  return `<div class="try-card"><div><span class="tag green">${label}</span><p>${esc(prompt)}</p></div><button class="button secondary" data-copy="${escAttr(prompt)}" type="button">Copy prompt</button></div>`;
 }
 
 function reference() {
@@ -899,32 +974,39 @@ function reference() {
   ];
   const advanced = [
     ["Code intelligence", "Language-server symbol navigation and diagnostics for typed codebases."],
-    ["Non-interactive mode / Agent SDK", "Run Claude Code from scripts, CI, or programmatic workflows when an interactive session is not the right surface."],
-    ["Remote Control / Teleport", "Continue work across local terminal, browser, phone, or cloud surfaces without treating every surface as a new engineering state."],
-    ["Artifacts", "Publish useful session output visually when a terminal transcript is the wrong medium."],
-    ["Agent teams", "Coordinate independent sessions when genuine parallelism justifies the added coordination cost."],
-    ["Settings layers / managed policy", "Understand that user, project, local, command-line, and organization policy can have different precedence and ownership."]
+    ["Non-interactive operation", "Run an agent from scripts or CI when an interactive session is not the right surface."],
+    ["Remote and cloud surfaces", "Continue work across surfaces without treating every surface as a new engineering state."],
+    ["Parallel agents", "Coordinate independent workers only when the task justifies the added integration cost."],
+    ["Settings and managed policy", "Personal, project, command-line, and organization policy can have different precedence and ownership."]
   ];
-  return `<div class="section-head"><span class="kicker">Reference</span><h1>Keep the control model handy.</h1><p>Use this as a field guide during a real Claude Code session.</p></div>
+  const sourceProducts = state.platform === "claude" ? new Set(["Claude Code"]) : state.platform === "codex" ? new Set(["Codex"]) : new Set(["Claude Code", "Codex"]);
+  const visibleSources = sourceRegistry.filter(source => sourceProducts.has(source.product));
+  return `<div class="section-head"><span class="kicker">Reference</span><h1>Keep the control model handy.</h1><p>Use this field guide with any coding agent. Platform details appear after the shared responsibility.</p></div>
+    ${renderGlossary()}
     ${groups.map(([title, ids]) => `<section class="reference-group"><h2>${title}</h2><div class="reference-grid">${ids.map(id => { const lesson = lessons.find(item => item.id === id); return `<a class="card reference-card" href="#/${firstPageForModule(id)}"><span class="tag">${lesson.progress}</span><h3>${lesson.title}</h3><p>${lesson.objective}</p></a>`; }).join("")}</div></section>`).join("")}
     <section class="panel"><h2>Advanced / situational capabilities</h2><p class="small">Know these exist; do not configure them merely because they are available.</p><div class="advanced-grid">${advanced.map(([title, body]) => `<div class="advanced-item"><strong>${title}</strong><span>${body}</span></div>`).join("")}</div></section>
     <section class="panel"><h2>Research behind long-context behavior</h2><p class="small">These sources support the positional-bias and context-engineering mental models used in Module 01.</p>${researchLinks()}</section>
-    <section class="panel"><h2>Official Claude Code documentation</h2><p class="small">The course teaches judgment and workflow. Use the official docs for current command and configuration details.</p><div class="docs-list">${officialDocs.map(doc => `<a href="${doc.url}" target="_blank" rel="noreferrer">${doc.label} ↗</a>`).join("")}</div></section>`;
+    <section class="panel"><h2>Official platform sources</h2><p class="small">Commands and surfaces change. Each adapter claim records its source, maturity, review date, and whether its 180-day review window is overdue.</p><div class="source-table" role="table" aria-label="Official platform source registry">${visibleSources.map(source => { const overdue = isReviewOverdue(source.lastReviewed); return `<a class="source-row" href="${source.url}" target="_blank" rel="noreferrer"><span>${source.product}</span><strong>${source.label}</strong><small>${source.concept} · ${source.lastReviewed} · ${source.maturity} · ${overdue ? "REVIEW OVERDUE" : "review current"}</small><b>↗</b></a>`; }).join("")}</div></section>`;
 }
 
 function pageBody(current) {
   const pages = {
+    "start/readiness": renderReadiness,
     "agent": agent,
+    "agent/first-task": () => renderFirstTask({ adapterNote: platformNote("orient", { includeGeneric: true }), prompt: selectedPrompt("orient", prompts.context) }),
+    "agent/tokens": () => renderTokenPrimer(tokenSources),
     "agent/attention": agentAttention,
     "agent/position": agentPosition,
     "agent/budget": agentBudget,
     "context/orient": contextOrient,
     "context/ladder": contextLadder,
     "context/summary": contextSummary,
+    "context/contract": () => renderTaskContract(state.drafts),
     "research/problem": researchProblem,
     "research/investigation": researchInvestigation,
     "research/evidence": researchEvidence,
     "plan/critique": planCritique,
+    "plan/construct": () => renderConstructPlan(state.drafts),
     "plan/approve": planApprove,
     "execution/controls": executionControls,
     "execution/goal": executionGoal,
@@ -943,7 +1025,9 @@ function pageBody(current) {
     "capstone/repository": capstoneRepository,
     "capstone/investigation": capstoneInvestigation,
     "capstone/plan": capstonePlan,
-    "capstone/verification": capstoneVerification
+    "capstone/evidence": () => renderCapstoneEvidence(state.drafts),
+    "capstone/verification": capstoneVerification,
+    "capstone/handoff": () => renderCapstoneHandoff(state.drafts)
   };
   return pages[current.path]?.() || "";
 }
@@ -951,7 +1035,8 @@ function pageBody(current) {
 function wire() {
   main.querySelectorAll("[data-next]").forEach(button => button.addEventListener("click", () => complete(button.dataset.next)));
   main.querySelectorAll("[data-mode]").forEach(button => button.addEventListener("click", () => { state.mode = button.dataset.mode; state.courseCompleted = false; complete("start"); save(); }));
-  main.querySelectorAll("[data-finish]").forEach(button => button.addEventListener("click", () => { complete("capstone"); state.courseCompleted = true; state.lastPath = "capstone/verification"; save(); }));
+  main.querySelectorAll("[data-platform]").forEach(button => button.addEventListener("click", () => { setPlatform(button.dataset.platform); page(); }));
+  main.querySelectorAll("[data-finish]").forEach(button => button.addEventListener("click", () => { complete("capstone"); state.courseCompleted = true; state.lastPath = "capstone/handoff"; save(); }));
   main.querySelectorAll("[data-choice]").forEach(button => button.addEventListener("click", () => handleChoice(button)));
   main.querySelectorAll("[data-copy]").forEach(button => button.addEventListener("click", async () => {
     try { await navigator.clipboard?.writeText(button.dataset.copy); button.textContent = "Copied ✓"; }
@@ -978,6 +1063,41 @@ function wire() {
     main.querySelector("[data-evidence-view]").innerHTML = evidenceViews[button.dataset.evidenceTab];
   }));
 
+  main.querySelectorAll("[data-draft]").forEach(field => field.addEventListener("input", () => {
+    state.drafts[field.dataset.draft] = field.value;
+    save();
+    const status = main.querySelector(`[data-draft-status="${CSS.escape(field.dataset.draft)}"]`);
+    if (status) status.textContent = "Saved";
+  }));
+
+  main.querySelectorAll("[data-reveal]").forEach(button => button.addEventListener("click", () => {
+    const panel = main.querySelector(`[data-reveal-panel="${CSS.escape(button.dataset.reveal)}"]`);
+    if (!panel) return;
+    panel.hidden = false;
+    button.setAttribute("aria-expanded", "true");
+    button.textContent = button.dataset.reveal.startsWith("retrieval-") ? "Answer revealed" : "Exemplar revealed";
+  }));
+
+  const readiness = main.querySelector("#check-readiness");
+  if (readiness) readiness.addEventListener("click", () => {
+    const total = main.querySelectorAll("[data-readiness]").length;
+    const checked = main.querySelectorAll("[data-readiness]:checked").length;
+    const feedback = main.querySelector("#readiness-feedback");
+    feedback.hidden = false;
+    feedback.className = `feedback ${checked >= 2 ? "strong" : "reasonable"}`;
+    feedback.textContent = checked >= 2 ? `Ready to begin. ${checked} of ${total} foundations are already familiar.` : "You can continue. Use the labeled walkthroughs and verify one claim at a time.";
+  });
+
+  const glossaryFilter = main.querySelector("[data-glossary-filter]");
+  if (glossaryFilter) glossaryFilter.addEventListener("input", () => {
+    const query = glossaryFilter.value.trim().toLowerCase();
+    const terms = [...main.querySelectorAll("[data-glossary-term]")];
+    let visible = 0;
+    terms.forEach(term => { const matches = term.dataset.glossaryTerm.includes(query); term.hidden = !matches; if (matches) visible += 1; });
+    main.querySelector("[data-glossary-count]").textContent = `${visible} ${visible === 1 ? "term" : "terms"}`;
+    main.querySelector("[data-glossary-empty]").hidden = visible !== 0;
+  });
+
   const reviewPlan = main.querySelector("#review-plan");
   if (reviewPlan) reviewPlan.addEventListener("click", () => {
     const items = [...main.querySelectorAll("[data-plan-item]")];
@@ -993,7 +1113,7 @@ function wire() {
 
   const checkExtensions = main.querySelector("#check-extensions");
   if (checkExtensions) checkExtensions.addEventListener("click", () => {
-    const answers = { e1: "claude", e2: "rule", e3: "skill", e4: "output", e5: "mcp", e6: "subagent", e7: "hook", e8: "plugin" };
+    const answers = { e1: "guidance", e2: "scope", e3: "skill", e4: "mcp", e6: "subagent", e7: "hook", e8: "plugin", e9: "sandbox" };
     const selects = [...main.querySelectorAll("[data-extension-id]")];
     const correct = selects.filter(select => select.value === answers[select.dataset.extensionId]).length;
     const feedback = main.querySelector("#extensions-feedback");
@@ -1023,7 +1143,10 @@ function page() {
   wire();
   renderNav();
   main.focus({ preventScroll: true });
+  window.scrollTo({ top: 0, left: 0, behavior: "auto" });
 }
 
 window.addEventListener("hashchange", page);
+platformSelect?.addEventListener("change", event => { setPlatform(event.target.value); page(); });
+save();
 page();

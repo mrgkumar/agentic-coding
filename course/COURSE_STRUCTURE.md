@@ -1,12 +1,13 @@
-# Course Structure · v1.3
+# Course Structure · v2.0 alpha
 
-The app keeps ten top-level modules. Module 01 now establishes the technical reason for context engineering before the learner practices the Context Ladder.
+The course keeps one ten-module lesson graph. The learner selects a platform guide without creating a second course or progress history.
 
 ```text
 00 Start                              #/start
 
-01 How an Agent Thinks                #/agent
-  ├─ Chat vs agent                    #/agent
+01 From LLM to Coding Agent           #/agent
+  ├─ LLM vs agent                     #/agent
+  ├─ Tokens + Transformers             #/agent/tokens
   ├─ Attention mechanism              #/agent/attention
   ├─ Position bias                    #/agent/position
   └─ Finite context                   #/agent/budget
@@ -16,8 +17,8 @@ The app keeps ten top-level modules. Module 01 now establishes the technical rea
   ├─ Context Ladder                   #/context/ladder
   └─ Context summary                  #/context/summary
 
-03 Research Before Editing            #/research/problem
-  ├─ Problem                          #/research/problem
+03 Investigate Before Editing         #/research/problem
+  ├─ Observed problem                 #/research/problem
   ├─ Investigation                    #/research/investigation
   └─ Evidence board                   #/research/evidence
 
@@ -26,56 +27,81 @@ The app keeps ten top-level modules. Module 01 now establishes the technical rea
   └─ Approve good plan                #/plan/approve
 
 05 Control Execution                  #/execution/controls
-  ├─ Plan / goal / loop               #/execution/controls
-  ├─ /goal exercise                   #/execution/goal
-  └─ /loop micro-example              #/execution/loop
+  ├─ Plan / goal / schedule           #/execution/controls
+  ├─ Completion condition             #/execution/goal
+  └─ Recurring check                  #/execution/loop
 
-06 Verify & Accept                    #/verification/goal
+06 Verify, Review & Accept            #/verification/goal
   ├─ Goal met?                        #/verification/goal
   ├─ Review evidence                  #/verification/review
   └─ Acceptance decision              #/verification/scope
 
-07 Extend & Control Claude            #/controls/map
-  ├─ Extension map                    #/controls/map
+07 Extend & Constrain the Agent       #/controls/map
+  ├─ Responsibility map               #/controls/map
   ├─ Choose the mechanism             #/controls/choose
   └─ Safety layers                    #/controls/safety
 
 08 Manage Long-Running Work           #/context-agents/sources
-  ├─ Memory and sources               #/context-agents/sources
-  ├─ /context /compact /clear         #/context-agents/hygiene
+  ├─ Guidance, memory, context         #/context-agents/sources
+  ├─ Inspect / compact / start fresh   #/context-agents/hygiene
   ├─ Handoff / resume                 #/context-agents/handoff
-  ├─ /rewind /branch                  #/context-agents/recovery
-  └─ Subagent / worktree / team       #/context-agents/parallel
+  ├─ Restore / branch                 #/context-agents/recovery
+  └─ Subagent / worktree / sessions   #/context-agents/parallel
 
-09 Capstone                           #/capstone/repository
+09 Cross-Platform Capstone            #/capstone/repository
   ├─ New repository                   #/capstone/repository
   ├─ Investigation                    #/capstone/investigation
   ├─ Plan / execution                 #/capstone/plan
   └─ Verification                     #/capstone/verification
 ```
 
-Total learner routes: **31 + reference**.
+Total learner routes: **38 + reference**.
 
-## Modes
+## Learning modes
 
 - **Full course**: all routes, target about 80–105 minutes.
-- **Quick refresher**: curated decision path, now includes the position/context-resource foundation, target about 35–45 minutes.
-- **Reference**: direct concept lookup plus primary research and official Claude Code documentation.
+- **Quick refresher**: curated decision path, target about 35–45 minutes.
+- **Reference**: direct concept lookup plus research and official platform sources.
 
-## Module 01 causal bridge
+## Platform guide modes
+
+- **Generic concepts**: shared principle and product-neutral prompt only.
+- **Claude Code**: shared content plus concise Claude Code adapter notes.
+- **Codex**: shared content plus concise Codex adapter notes.
+- **Show both**: shared content followed by a compact adapter comparison.
+
+Platform selection, course mode, answers, drafts, and progress share one browser-local state. Switching a platform does not reset completion.
+
+## Central operating model
 
 ```text
-Agent loop
-   ↓
-Attention is selective
-   ↓
-Position can matter
-   ↓
-Long context has failure modes
-   ↓
-Therefore context must be engineered
-   ↓
-Context Ladder
+Understand goal
+      ↓
+Build context
+      ↓
+Gather evidence
+      ↓
+Propose plan
+      ↓
+Human review
+      ↓
+Agent executes
+      ↓
+Agent verifies
+      ↓
+Human reviews evidence
+      ↓
+Accept or correct
 ```
 
-Progress remains stored in `localStorage` and learners can resume the most recent route from the home page.
+## Content boundary
+
+```text
+SHARED PRINCIPLE
+      ↓
+SHARED ENGINEERING PATTERN
+      ↓
+PLATFORM ADAPTER
+```
+
+The shared lesson must remain meaningful without slash commands. Current product commands, configuration files, caveats, sources, maturity, and review dates belong in `src/platforms.js`.
