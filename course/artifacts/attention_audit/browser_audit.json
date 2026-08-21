@@ -1,0 +1,720 @@
+{
+  "summary": {
+    "desktop": {
+      "routes": 32,
+      "overflow_routes": [],
+      "error_routes": [],
+      "max_scroll_height": 2432
+    },
+    "mobile": {
+      "routes": 32,
+      "overflow_routes": [],
+      "error_routes": [],
+      "max_scroll_height": 4484
+    },
+    "narrow": {
+      "routes": 32,
+      "overflow_routes": [],
+      "error_routes": [],
+      "max_scroll_height": 4983
+    }
+  },
+  "interactions": {
+    "attention": {
+      "feedback": "Strong. Being inside the context window makes information available, not equally influential. Attention is selective across many heads and layers.",
+      "class": "feedback strong"
+    },
+    "position": {
+      "feedback": "Strong. In the classic lost-in-the-middle pattern, relevant information near the beginning or end is often used more reliably than information buried in the middle.",
+      "class": "feedback strong"
+    },
+    "context-budget": {
+      "feedback": "Strong. Treat context as a finite resource: keep the smallest high-signal set that still contains the goal, evidence, constraints, and decisions needed for the task.",
+      "class": "feedback strong"
+    },
+    "deep_dive_open": true,
+    "position_sources": 3,
+    "budget_sources": 2,
+    "hygiene_attention_link": 1
+  },
+  "routes": {
+    "desktop": [
+      {
+        "route": "start",
+        "h1": "Control the agent.",
+        "horizontal_overflow": 0,
+        "scroll_height": 1043,
+        "errors": []
+      },
+      {
+        "route": "agent",
+        "h1": "From Chat to Agent",
+        "horizontal_overflow": 0,
+        "scroll_height": 1321,
+        "errors": []
+      },
+      {
+        "route": "agent/attention",
+        "h1": "How attention uses context",
+        "horizontal_overflow": 0,
+        "scroll_height": 1573,
+        "errors": []
+      },
+      {
+        "route": "agent/position",
+        "h1": "Position changes what gets used",
+        "horizontal_overflow": 0,
+        "scroll_height": 1772,
+        "errors": []
+      },
+      {
+        "route": "agent/budget",
+        "h1": "Treat context as a finite engineering resource",
+        "horizontal_overflow": 0,
+        "scroll_height": 2165,
+        "errors": []
+      },
+      {
+        "route": "context/orient",
+        "h1": "Orient the repository",
+        "horizontal_overflow": 0,
+        "scroll_height": 1087,
+        "errors": []
+      },
+      {
+        "route": "context/ladder",
+        "h1": "Context Ladder",
+        "horizontal_overflow": 0,
+        "scroll_height": 1276,
+        "errors": []
+      },
+      {
+        "route": "context/summary",
+        "h1": "Context summary",
+        "horizontal_overflow": 0,
+        "scroll_height": 1442,
+        "errors": []
+      },
+      {
+        "route": "research/problem",
+        "h1": "The problem",
+        "horizontal_overflow": 0,
+        "scroll_height": 1013,
+        "errors": []
+      },
+      {
+        "route": "research/investigation",
+        "h1": "Investigation",
+        "horizontal_overflow": 0,
+        "scroll_height": 1056,
+        "errors": []
+      },
+      {
+        "route": "research/evidence",
+        "h1": "Evidence board",
+        "horizontal_overflow": 0,
+        "scroll_height": 1271,
+        "errors": []
+      },
+      {
+        "route": "plan/critique",
+        "h1": "Critique the plan",
+        "horizontal_overflow": 0,
+        "scroll_height": 1096,
+        "errors": []
+      },
+      {
+        "route": "plan/approve",
+        "h1": "Approve the plan",
+        "horizontal_overflow": 0,
+        "scroll_height": 1357,
+        "errors": []
+      },
+      {
+        "route": "execution/controls",
+        "h1": "Plan vs /goal vs /loop",
+        "horizontal_overflow": 0,
+        "scroll_height": 976,
+        "errors": []
+      },
+      {
+        "route": "execution/goal",
+        "h1": "The /goal exercise",
+        "horizontal_overflow": 0,
+        "scroll_height": 1127,
+        "errors": []
+      },
+      {
+        "route": "execution/loop",
+        "h1": "The /loop micro-example",
+        "horizontal_overflow": 0,
+        "scroll_height": 1228,
+        "errors": []
+      },
+      {
+        "route": "verification/goal",
+        "h1": "Goal met?",
+        "horizontal_overflow": 0,
+        "scroll_height": 1044,
+        "errors": []
+      },
+      {
+        "route": "verification/review",
+        "h1": "Review the evidence",
+        "horizontal_overflow": 0,
+        "scroll_height": 1117,
+        "errors": []
+      },
+      {
+        "route": "verification/scope",
+        "h1": "Make the acceptance decision",
+        "horizontal_overflow": 0,
+        "scroll_height": 1235,
+        "errors": []
+      },
+      {
+        "route": "controls/map",
+        "h1": "Extend the agent at the right layer",
+        "horizontal_overflow": 0,
+        "scroll_height": 1369,
+        "errors": []
+      },
+      {
+        "route": "controls/choose",
+        "h1": "Choose the right mechanism",
+        "horizontal_overflow": 0,
+        "scroll_height": 1548,
+        "errors": []
+      },
+      {
+        "route": "controls/safety",
+        "h1": "Safety is layered",
+        "horizontal_overflow": 0,
+        "scroll_height": 1808,
+        "errors": []
+      },
+      {
+        "route": "context-agents/sources",
+        "h1": "What persists, and where?",
+        "horizontal_overflow": 0,
+        "scroll_height": 1274,
+        "errors": []
+      },
+      {
+        "route": "context-agents/hygiene",
+        "h1": "Inspect, compact, or clear",
+        "horizontal_overflow": 0,
+        "scroll_height": 1448,
+        "errors": []
+      },
+      {
+        "route": "context-agents/handoff",
+        "h1": "Continue without losing the thread",
+        "horizontal_overflow": 0,
+        "scroll_height": 1367,
+        "errors": []
+      },
+      {
+        "route": "context-agents/recovery",
+        "h1": "Recover or explore safely",
+        "horizontal_overflow": 0,
+        "scroll_height": 1379,
+        "errors": []
+      },
+      {
+        "route": "context-agents/parallel",
+        "h1": "Choose the right isolation boundary",
+        "horizontal_overflow": 0,
+        "scroll_height": 1533,
+        "errors": []
+      },
+      {
+        "route": "capstone/repository",
+        "h1": "New repository",
+        "horizontal_overflow": 0,
+        "scroll_height": 1107,
+        "errors": []
+      },
+      {
+        "route": "capstone/investigation",
+        "h1": "Capstone investigation",
+        "horizontal_overflow": 0,
+        "scroll_height": 1048,
+        "errors": []
+      },
+      {
+        "route": "capstone/plan",
+        "h1": "Plan and execution",
+        "horizontal_overflow": 0,
+        "scroll_height": 1207,
+        "errors": []
+      },
+      {
+        "route": "capstone/verification",
+        "h1": "Capstone verification",
+        "horizontal_overflow": 0,
+        "scroll_height": 1303,
+        "errors": []
+      },
+      {
+        "route": "reference",
+        "h1": "Keep the control model handy.",
+        "horizontal_overflow": 0,
+        "scroll_height": 2432,
+        "errors": []
+      }
+    ],
+    "mobile": [
+      {
+        "route": "start",
+        "h1": "Control the agent.",
+        "horizontal_overflow": 0,
+        "scroll_height": 2287,
+        "errors": []
+      },
+      {
+        "route": "agent",
+        "h1": "From Chat to Agent",
+        "horizontal_overflow": 0,
+        "scroll_height": 2141,
+        "errors": []
+      },
+      {
+        "route": "agent/attention",
+        "h1": "How attention uses context",
+        "horizontal_overflow": 0,
+        "scroll_height": 2529,
+        "errors": []
+      },
+      {
+        "route": "agent/position",
+        "h1": "Position changes what gets used",
+        "horizontal_overflow": 0,
+        "scroll_height": 2815,
+        "errors": []
+      },
+      {
+        "route": "agent/budget",
+        "h1": "Treat context as a finite engineering resource",
+        "horizontal_overflow": 0,
+        "scroll_height": 3944,
+        "errors": []
+      },
+      {
+        "route": "context/orient",
+        "h1": "Orient the repository",
+        "horizontal_overflow": 0,
+        "scroll_height": 1673,
+        "errors": []
+      },
+      {
+        "route": "context/ladder",
+        "h1": "Context Ladder",
+        "horizontal_overflow": 0,
+        "scroll_height": 1809,
+        "errors": []
+      },
+      {
+        "route": "context/summary",
+        "h1": "Context summary",
+        "horizontal_overflow": 0,
+        "scroll_height": 2165,
+        "errors": []
+      },
+      {
+        "route": "research/problem",
+        "h1": "The problem",
+        "horizontal_overflow": 0,
+        "scroll_height": 1314,
+        "errors": []
+      },
+      {
+        "route": "research/investigation",
+        "h1": "Investigation",
+        "horizontal_overflow": 0,
+        "scroll_height": 1185,
+        "errors": []
+      },
+      {
+        "route": "research/evidence",
+        "h1": "Evidence board",
+        "horizontal_overflow": 0,
+        "scroll_height": 2009,
+        "errors": []
+      },
+      {
+        "route": "plan/critique",
+        "h1": "Critique the plan",
+        "horizontal_overflow": 0,
+        "scroll_height": 1356,
+        "errors": []
+      },
+      {
+        "route": "plan/approve",
+        "h1": "Approve the plan",
+        "horizontal_overflow": 0,
+        "scroll_height": 2070,
+        "errors": []
+      },
+      {
+        "route": "execution/controls",
+        "h1": "Plan vs /goal vs /loop",
+        "horizontal_overflow": 0,
+        "scroll_height": 1501,
+        "errors": []
+      },
+      {
+        "route": "execution/goal",
+        "h1": "The /goal exercise",
+        "horizontal_overflow": 0,
+        "scroll_height": 1676,
+        "errors": []
+      },
+      {
+        "route": "execution/loop",
+        "h1": "The /loop micro-example",
+        "horizontal_overflow": 0,
+        "scroll_height": 1745,
+        "errors": []
+      },
+      {
+        "route": "verification/goal",
+        "h1": "Goal met?",
+        "horizontal_overflow": 0,
+        "scroll_height": 1570,
+        "errors": []
+      },
+      {
+        "route": "verification/review",
+        "h1": "Review the evidence",
+        "horizontal_overflow": 0,
+        "scroll_height": 1353,
+        "errors": []
+      },
+      {
+        "route": "verification/scope",
+        "h1": "Make the acceptance decision",
+        "horizontal_overflow": 0,
+        "scroll_height": 1616,
+        "errors": []
+      },
+      {
+        "route": "controls/map",
+        "h1": "Extend the agent at the right layer",
+        "horizontal_overflow": 0,
+        "scroll_height": 2377,
+        "errors": []
+      },
+      {
+        "route": "controls/choose",
+        "h1": "Choose the right mechanism",
+        "horizontal_overflow": 0,
+        "scroll_height": 2298,
+        "errors": []
+      },
+      {
+        "route": "controls/safety",
+        "h1": "Safety is layered",
+        "horizontal_overflow": 0,
+        "scroll_height": 2439,
+        "errors": []
+      },
+      {
+        "route": "context-agents/sources",
+        "h1": "What persists, and where?",
+        "horizontal_overflow": 0,
+        "scroll_height": 2239,
+        "errors": []
+      },
+      {
+        "route": "context-agents/hygiene",
+        "h1": "Inspect, compact, or clear",
+        "horizontal_overflow": 0,
+        "scroll_height": 2365,
+        "errors": []
+      },
+      {
+        "route": "context-agents/handoff",
+        "h1": "Continue without losing the thread",
+        "horizontal_overflow": 0,
+        "scroll_height": 2139,
+        "errors": []
+      },
+      {
+        "route": "context-agents/recovery",
+        "h1": "Recover or explore safely",
+        "horizontal_overflow": 0,
+        "scroll_height": 2168,
+        "errors": []
+      },
+      {
+        "route": "context-agents/parallel",
+        "h1": "Choose the right isolation boundary",
+        "horizontal_overflow": 0,
+        "scroll_height": 2518,
+        "errors": []
+      },
+      {
+        "route": "capstone/repository",
+        "h1": "New repository",
+        "horizontal_overflow": 0,
+        "scroll_height": 1331,
+        "errors": []
+      },
+      {
+        "route": "capstone/investigation",
+        "h1": "Capstone investigation",
+        "horizontal_overflow": 0,
+        "scroll_height": 1417,
+        "errors": []
+      },
+      {
+        "route": "capstone/plan",
+        "h1": "Plan and execution",
+        "horizontal_overflow": 0,
+        "scroll_height": 1722,
+        "errors": []
+      },
+      {
+        "route": "capstone/verification",
+        "h1": "Capstone verification",
+        "horizontal_overflow": 0,
+        "scroll_height": 2288,
+        "errors": []
+      },
+      {
+        "route": "reference",
+        "h1": "Keep the control model handy.",
+        "horizontal_overflow": 0,
+        "scroll_height": 4484,
+        "errors": []
+      }
+    ],
+    "narrow": [
+      {
+        "route": "start",
+        "h1": "Control the agent.",
+        "horizontal_overflow": 0,
+        "scroll_height": 2365,
+        "errors": []
+      },
+      {
+        "route": "agent",
+        "h1": "From Chat to Agent",
+        "horizontal_overflow": 0,
+        "scroll_height": 2296,
+        "errors": []
+      },
+      {
+        "route": "agent/attention",
+        "h1": "How attention uses context",
+        "horizontal_overflow": 0,
+        "scroll_height": 2780,
+        "errors": []
+      },
+      {
+        "route": "agent/position",
+        "h1": "Position changes what gets used",
+        "horizontal_overflow": 0,
+        "scroll_height": 3066,
+        "errors": []
+      },
+      {
+        "route": "agent/budget",
+        "h1": "Treat context as a finite engineering resource",
+        "horizontal_overflow": 0,
+        "scroll_height": 4377,
+        "errors": []
+      },
+      {
+        "route": "context/orient",
+        "h1": "Orient the repository",
+        "horizontal_overflow": 0,
+        "scroll_height": 1848,
+        "errors": []
+      },
+      {
+        "route": "context/ladder",
+        "h1": "Context Ladder",
+        "horizontal_overflow": 0,
+        "scroll_height": 1938,
+        "errors": []
+      },
+      {
+        "route": "context/summary",
+        "h1": "Context summary",
+        "horizontal_overflow": 0,
+        "scroll_height": 2271,
+        "errors": []
+      },
+      {
+        "route": "research/problem",
+        "h1": "The problem",
+        "horizontal_overflow": 0,
+        "scroll_height": 1379,
+        "errors": []
+      },
+      {
+        "route": "research/investigation",
+        "h1": "Investigation",
+        "horizontal_overflow": 0,
+        "scroll_height": 1309,
+        "errors": []
+      },
+      {
+        "route": "research/evidence",
+        "h1": "Evidence board",
+        "horizontal_overflow": 0,
+        "scroll_height": 2074,
+        "errors": []
+      },
+      {
+        "route": "plan/critique",
+        "h1": "Critique the plan",
+        "horizontal_overflow": 0,
+        "scroll_height": 1526,
+        "errors": []
+      },
+      {
+        "route": "plan/approve",
+        "h1": "Approve the plan",
+        "horizontal_overflow": 0,
+        "scroll_height": 2183,
+        "errors": []
+      },
+      {
+        "route": "execution/controls",
+        "h1": "Plan vs /goal vs /loop",
+        "horizontal_overflow": 0,
+        "scroll_height": 1626,
+        "errors": []
+      },
+      {
+        "route": "execution/goal",
+        "h1": "The /goal exercise",
+        "horizontal_overflow": 0,
+        "scroll_height": 1824,
+        "errors": []
+      },
+      {
+        "route": "execution/loop",
+        "h1": "The /loop micro-example",
+        "horizontal_overflow": 0,
+        "scroll_height": 1856,
+        "errors": []
+      },
+      {
+        "route": "verification/goal",
+        "h1": "Goal met?",
+        "horizontal_overflow": 0,
+        "scroll_height": 1686,
+        "errors": []
+      },
+      {
+        "route": "verification/review",
+        "h1": "Review the evidence",
+        "horizontal_overflow": 0,
+        "scroll_height": 1495,
+        "errors": []
+      },
+      {
+        "route": "verification/scope",
+        "h1": "Make the acceptance decision",
+        "horizontal_overflow": 0,
+        "scroll_height": 1845,
+        "errors": []
+      },
+      {
+        "route": "controls/map",
+        "h1": "Extend the agent at the right layer",
+        "horizontal_overflow": 0,
+        "scroll_height": 2516,
+        "errors": []
+      },
+      {
+        "route": "controls/choose",
+        "h1": "Choose the right mechanism",
+        "horizontal_overflow": 0,
+        "scroll_height": 2519,
+        "errors": []
+      },
+      {
+        "route": "controls/safety",
+        "h1": "Safety is layered",
+        "horizontal_overflow": 0,
+        "scroll_height": 2616,
+        "errors": []
+      },
+      {
+        "route": "context-agents/sources",
+        "h1": "What persists, and where?",
+        "horizontal_overflow": 0,
+        "scroll_height": 2406,
+        "errors": []
+      },
+      {
+        "route": "context-agents/hygiene",
+        "h1": "Inspect, compact, or clear",
+        "horizontal_overflow": 0,
+        "scroll_height": 2595,
+        "errors": []
+      },
+      {
+        "route": "context-agents/handoff",
+        "h1": "Continue without losing the thread",
+        "horizontal_overflow": 0,
+        "scroll_height": 2376,
+        "errors": []
+      },
+      {
+        "route": "context-agents/recovery",
+        "h1": "Recover or explore safely",
+        "horizontal_overflow": 0,
+        "scroll_height": 2342,
+        "errors": []
+      },
+      {
+        "route": "context-agents/parallel",
+        "h1": "Choose the right isolation boundary",
+        "horizontal_overflow": 0,
+        "scroll_height": 2822,
+        "errors": []
+      },
+      {
+        "route": "capstone/repository",
+        "h1": "New repository",
+        "horizontal_overflow": 0,
+        "scroll_height": 1448,
+        "errors": []
+      },
+      {
+        "route": "capstone/investigation",
+        "h1": "Capstone investigation",
+        "horizontal_overflow": 0,
+        "scroll_height": 1592,
+        "errors": []
+      },
+      {
+        "route": "capstone/plan",
+        "h1": "Plan and execution",
+        "horizontal_overflow": 0,
+        "scroll_height": 1926,
+        "errors": []
+      },
+      {
+        "route": "capstone/verification",
+        "h1": "Capstone verification",
+        "horizontal_overflow": 0,
+        "scroll_height": 2450,
+        "errors": []
+      },
+      {
+        "route": "reference",
+        "h1": "Keep the control model handy.",
+        "horizontal_overflow": 0,
+        "scroll_height": 4983,
+        "errors": []
+      }
+    ]
+  }
+}

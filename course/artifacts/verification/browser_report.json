@@ -1,0 +1,47 @@
+{
+  "viewports": {
+    "desktop": {
+      "width": 1440,
+      "height": 900,
+      "maxHorizontalOverflow": 0,
+      "errors": []
+    },
+    "tablet": {
+      "width": 768,
+      "height": 1024,
+      "maxHorizontalOverflow": 0,
+      "errors": []
+    },
+    "mobile": {
+      "width": 390,
+      "height": 844,
+      "maxHorizontalOverflow": 0,
+      "errors": []
+    },
+    "narrow": {
+      "width": 320,
+      "height": 760,
+      "maxHorizontalOverflow": 0,
+      "errors": []
+    }
+  },
+  "errors": [],
+  "journeys": {
+    "startProgress": "1 / 10",
+    "research": {
+      "wrong": "High risk. Editing before you know the cause can turn an assumption into code.",
+      "right": "Strong. Investigation establishes cause before implementation changes the evidence.",
+      "terminal": "> Investigate the fixed-coupon result before editing.\n\u2713 traced subtotal \u2192 tax \u2192 fixed coupon\n\u2713 observed tax base = \u20b92,000 instead of \u20b91,800\n\u2713 root cause candidate is now supported by code evidence"
+    },
+    "plan": "Strong review. Remove the broad abstraction and unrelated API rename. Keep the causal fix, regression coverage, and preservation constraints.",
+    "controls": "Strong. Guidance \u2192 CLAUDE.md; capability \u2192 tool; authorization \u2192 permission; deterministic lifecycle action \u2192 hook.",
+    "verification": {
+      "tests": "\u2713 percentage discount still passes\n\u2713 negative prices are still rejected\n\u2713 fixed coupons still clamp at zero\n\u2713 NEW: \u20b92,00",
+      "plan": "APPROVED PLAN\n\nCHANGE\n- fixed-coupon tax ordering\n\nTEST\n- add \u20b92,124 regression\n\nPRESERVE\n- percentage discount behavior",
+      "decision": "Strong. Challenge the implementation: the functional fix is correct, but the unrelated UI change violates the approved scope."
+    },
+    "quickNextHash": "#/context/ladder",
+    "planLeakAttrs": 0,
+    "controlLeakAttrs": 0
+  }
+}

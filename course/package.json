@@ -1,0 +1,9 @@
+{
+  "name": "control-the-agent-course",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/*.test.js",
+    "check": "node --check src/app.js && node --test tests/*.test.js"
+  }
+}

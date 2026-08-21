@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<title>Presenter Notes — Claude Code Talk</title>
+<style>
+:root{--b:#569CBE;--bd:#245D78;--deep:#0B3548;--soft:#EAF4F8;--ink:#13242d;--muted:#5f6f77;--line:#d8e5ea;--bg:#f4f7f9}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:Arial,Helvetica,sans-serif;color:var(--ink);background:var(--bg);line-height:1.55}
+.layout{display:grid;grid-template-columns:300px 1fr;min-height:100vh}
+aside{position:sticky;top:0;height:100vh;overflow:auto;background:var(--deep);color:#fff;padding:24px 18px}
+.brand{font-size:18px;font-weight:800;margin-bottom:5px}.brand small{display:block;color:#b9d8e5;font-size:12px;letter-spacing:.08em;text-transform:uppercase;margin-top:4px}
+nav{display:grid;gap:4px;margin-top:24px}nav a{color:#dcecf3;text-decoration:none;padding:9px 10px;border-radius:9px;font-size:13px}nav a:hover{background:#174c63}nav a span{display:inline-block;width:28px;color:#8fc9e0;font-weight:900}
+main{padding:38px 46px 80px;max-width:1120px;width:100%}.top{background:#fff;border:1px solid var(--line);border-radius:24px;padding:28px 32px;margin-bottom:28px;box-shadow:0 10px 32px rgba(20,52,68,.07)}
+h1{font-size:38px;letter-spacing:-.03em;margin:0 0 10px}h2{font-size:29px;letter-spacing:-.025em;margin:0 0 8px}h3{font-size:16px;color:var(--bd);margin:24px 0 7px;text-transform:uppercase;letter-spacing:.07em}.lead{font-size:18px;color:#4c5d66}
+.slide-note{background:#fff;border:1px solid var(--line);border-radius:24px;padding:28px 32px;margin:0 0 24px;box-shadow:0 8px 26px rgba(20,52,68,.055);scroll-margin-top:20px}
+.slide-head{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;border-bottom:1px solid #e7eef1;padding-bottom:16px;margin-bottom:20px}.num{width:42px;height:42px;border-radius:12px;background:var(--bd);color:#fff;display:grid;place-items:center;font-weight:900;flex:0 0 auto}.slide-title{flex:1}.slide-title small{color:var(--muted);font-size:12px}.time{white-space:nowrap;background:var(--soft);color:var(--bd);border-radius:999px;padding:6px 10px;font-size:12px;font-weight:800}
+.purpose{background:var(--soft);border-left:4px solid var(--b);padding:12px 14px;border-radius:0 10px 10px 0;margin-bottom:18px}.purpose strong{color:var(--deep)}
+.script{font-size:17px}.script p{margin:0 0 13px}.script p:last-child{margin-bottom:0}
+.transition{margin-top:20px;border-top:1px dashed #d8e3e8;padding-top:15px;color:#3e5662}.transition strong{color:var(--bd)}
+.demo,.fallback,.questions,.sources{margin-top:16px;border-radius:13px;padding:13px 15px}.demo{background:#eef8f5;border:1px solid #d0e9e1}.fallback{background:#fff5e8;border:1px solid #efdfc6}.questions{background:#f5f3fb;border:1px solid #ded8ef}.sources{background:#f7fafb;border:1px solid #e1e9ed;font-size:12px}.sources a{display:block;color:var(--bd);word-break:break-all}
+.preflight{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:16px}.preflight div{background:var(--soft);padding:12px 14px;border-radius:12px;font-size:14px}
+code{background:#edf4f6;border-radius:5px;padding:2px 5px}
+@media(max-width:820px){.layout{grid-template-columns:1fr}aside{position:relative;height:auto}.layout aside nav{grid-template-columns:1fr 1fr}.layout main{padding:22px 14px 60px}.slide-note,.top{padding:21px}.slide-head{display:grid;grid-template-columns:auto 1fr}.time{grid-column:2;width:max-content}.preflight{grid-template-columns:1fr}}
+@media print{aside{display:none}.layout{display:block}main{max-width:none;padding:0}.slide-note{page-break-after:always;box-shadow:none;border:0}.top{box-shadow:none}}
+
+.diagram-note{margin:10px 0 14px;padding:10px 12px;border-left:4px solid #569CBE;background:#eef7fa;border-radius:0 10px 10px 0;color:#304b59;font-size:14px;line-height:1.45}.diagram-note strong{color:#245D78}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside>
+<div class="brand">Claude Code Talk<small>Detailed presenter notes</small></div>
+<div style="font-size:13px;color:#c8e0e9">20 slides · ~50 minutes planned · ~10 minutes buffer/Q&amp;A</div>
+<nav><a href="#slide-1"><span>01</span>Claude Code: From Prompting to Eng</a>
+<a href="#slide-2"><span>02</span>Chat gives answers. Agents take ac</a>
+<a href="#slide-3"><span>03</span>Context → decision → tool → result</a>
+<a href="#slide-4"><span>04</span>Live 01 — Build shared context</a>
+<a href="#slide-5"><span>05</span>What just happened? The Context La</a>
+<a href="#slide-6"><span>06</span>Put durable knowledge in the right</a>
+<a href="#slide-7"><span>07</span>Prompt like an engineer: specify t</a>
+<a href="#slide-8"><span>08</span>Research → Plan → Execute → Verify</a>
+<a href="#slide-9"><span>09</span>Start read-only. Find evidence fir</a>
+<a href="#slide-10"><span>10</span>Live 02 — Investigate the bug</a>
+<a href="#slide-11"><span>11</span>Review the plan while change is st</a>
+<a href="#slide-12"><span>12</span>Live 03 — Plan → Approve</a>
+<a href="#slide-13"><span>13</span>Plan, /goal and /loop answer diffe</a>
+<a href="#slide-14"><span>14</span>Live 04 — Execute the approved pla</a>
+<a href="#slide-15"><span>15</span>Live 05 — Goal met ≠ change accept</a>
+<a href="#slide-16"><span>16</span>Tools define capability. Boundarie</a>
+<a href="#slide-17"><span>17</span>Separate work when separation help</a>
+<a href="#slide-18"><span>18</span>Use the right layer for the right </a>
+<a href="#slide-19"><span>19</span>Preserve the signal. Remove the no</a>
+<a href="#slide-20"><span>20</span>Build shared context. Set a verifi</a>
+</nav>
+</aside>
+<main>
+<section class="top">
+<h1>Presenter Notes</h1>
+<p class="lead">Claude Code — Context, Goals and Engineering Loops</p>
+<p>These notes are a near-verbatim rehearsal script. Use them as a precise fallback during the session; you do not need to read every sentence word-for-word.</p>
+<h3>Pre-flight checklist</h3>
+<div class="preflight">
+<div>✓ Open the presentation and test swipe/keyboard navigation.</div>
+<div>✓ Open a terminal in <code>demo-shopping-calculator/</code>.</div>
+<div>✓ Run <code>npm test</code>; the baseline should still be green.</div>
+<div>✓ Check your organization's Claude Code version and permission mode.</div>
+<div>✓ Confirm <code>/plan</code>, <code>/goal</code>, <code>/loop</code> and <code>/verify</code> availability for your installed version.</div>
+<div>✓ Keep a clean copy of the baseline repository ready for recovery.</div>
+</div>
+<h3>Timing strategy</h3>
+<p>The first live terminal appears on slide 4. Slides 4, 10, 12, 14 and 15 are the core demo checkpoints. Slides 16–19 are intentionally compressible. The deck is planned for about 49.5 minutes including 8 minutes of Q&amp;A, leaving roughly 10 minutes for live-tool latency and audience interaction.</p>
+<p style="font-size:12px;color:#6b7b83">Claude Code terminology and feature behavior in these notes were checked against official documentation on 18 Aug 2026. Your internal configuration may differ.</p>
+</section><section class="slide-note" id="slide-1">
+<div class="slide-head">
+<div class="num">01</div>
+<div class="slide-title"><h2>Claude Code: From Prompting to Engineering</h2><small>Slide 1 of 20</small></div>
+<div class="time">1.5 min</div>
+</div>
+<div class="purpose"><strong>PURPOSE</strong><br/>Set the frame: controlled engineering delegation, not prompt tricks.</div>
+<h3>Exact speaker notes</h3>
+<div class="script"><p>Good morning everyone. Before we start, a quick show of hands: how many of you have used an AI coding assistant?</p><p>Now keep your hand up if you have allowed one to read a repository, run commands, or edit several files on its own.</p><p>That second experience is what we are discussing today. Claude Code is not only a place where we ask coding questions. It can operate as an engineering agent inside a codebase.</p><p>My goal for the next hour is not to teach you twenty commands. I want to give you one working model that you can use from your first week here through senior-level engineering work: build shared context, make the plan visible, delegate inside clear boundaries, and verify the result with evidence.</p><p>The phrase I want you to remember is: the skill is not writing clever prompts. The skill is engineering the loop.</p></div>
+<div class="transition"><strong>TRANSITION</strong><br/>Let us start with the most important shift: an answer and an action are not the same thing.</div>
+<div class="sources"><strong>Official reference</strong><a href="https://code.claude.com/docs/en/how-claude-code-works">https://code.claude.com/docs/en/how-claude-code-works</a></div>
+</section><section class="slide-note" id="slide-2">
+<div class="slide-head">
+<div class="num">02</div>
+<div class="slide-title"><h2>Chat gives answers. Agents take actions.</h2><div class="diagram-note"><strong>Diagram:</strong> Compare the two pipelines left-to-right. This slide benefits from a diagram because the difference is a change in flow: text-only response versus action/evidence loop.</div><small>Slide 2 of 20</small></div>
+<div class="time">1.5 min</div>
+</div>
+<div class="purpose"><strong>PURPOSE</strong><br/>Explain why engineering discipline changes when the model can act.</div>
+<h3>Exact speaker notes</h3>
+<div class="script"><p>With a normal chat assistant, the basic unit is question and answer. I ask something, the model gives me text, and I decide what to do with it.</p><p>With Claude Code, the model can use tools. It can read files, search the repository, edit code, run a test command, inspect the output, and decide what to do next.</p><p>That changes the question we should ask as engineers. It is no longer only, 'Does this answer sound correct?' It becomes, 'What did the agent actually do? What was it allowed to do? What evidence do I have that the outcome is correct?'</p><p>This is why permissions, context, planning, tests and verification become more important—not less important—as the tool becomes more autonomous.</p></div>
+<div class="transition"><strong>TRANSITION</strong><br/>To use an agent well, we need a simple picture of what is inside the loop.</div>
+<div class="sources"><strong>Official reference</strong><a href="https://code.claude.com/docs/en/how-claude-code-works">https://code.claude.com/docs/en/how-claude-code-works</a><a href="https://code.claude.com/docs/en/tools-reference">https://code.claude.com/docs/en/tools-reference</a></div>
+</section><section class="slide-note" id="slide-3">
+<div class="slide-head">
+<div class="num">03</div>
+<div class="slide-title"><h2>Context → decision → tool → result → repeat.</h2><div class="diagram-note"><strong>Diagram:</strong> Trace the loop clockwise and close it with the return arrow. The return path is the key idea: tool results become new context.</div><small>Slide 3 of 20</small></div>
+<div class="time">2 min</div>
+</div>
+<div class="purpose"><strong>PURPOSE</strong><br/>Give the audience one small mental model before introducing feature names.</div>
+<h3>Exact speaker notes</h3>
+<div class="script"><p>I want to keep the architecture simple enough that you can hold it in your head while we work.</p><p>First is context: system instructions, persistent project or user instructions, what Claude has learned in this session, and the current task.</p><p>Claude reasons over that context and chooses a next action.</p><p>The action happens through a tool. Read and Search observe. Edit and Write change files. Bash executes commands. Agent delegates work. MCP can extend the available capabilities.</p><p>The tool result comes back into the conversation, becomes new context, and Claude chooses again. That repetition is the agent loop.</p><p>One control distinction matters already: instructions guide what Claude tries to do. Permissions are enforced by Claude Code and decide what tool actions it is allowed to do.</p><p>That is enough theory for now. Let us watch the loop on a tiny repository.</p></div>
+<div class="transition"><strong>TRANSITION</strong><br/>I am going to switch to the terminal before we introduce more vocabulary.</div>
+<div class="sources"><strong>Official reference</strong><a href="https://code.claude.com/docs/en/how-claude-code-works">https://code.claude.com/docs/en/how-claude-code-works</a><a href="https://code.claude.com/docs/en/tools-reference">https://code.claude.com/docs/en/tools-reference</a><a href="https://code.claude.com/docs/en/permissions">https://code.claude.com/docs/en/permissions</a></div>
+</section><section class="slide-note" id="slide-4">
+<div class="slide-head">
+<div class="num">04</div>
+<div class="slide-title"><h2>Live 01 — Build shared context</h2><small>Slide 4 of 20</small></div>
+<div class="time">3.5 min</div>
+</div>
+<div class="purpose"><strong>PURPOSE</strong><br/>Demonstrate orientation and tracing before the audience receives more terminology.</div>
+<h3>Exact speaker notes</h3>
+<div class="script"><p>I am switching to Claude Code now, before I tell you anything about the bug.</p><p>My first prompt says: I just joined this project. Do not modify anything. Explain what the application does, the major files or modules, how to run it, and how to run its tests.</p><p>While Claude works, watch the tool calls. Read and search operations are not side effects of the answer; they are how the agent constructs session context from evidence.</p><p>Then I narrow the question: where is the final shopping total calculated? Trace the flow from the HTML form, through the business logic, and back to the displayed result. What tests protect that path?</p><p>I expect a compact map: index.html provides the form, app.js reads and renders, calculator.js owns the calculation, and calculator.test.js protects some behaviors.</p><p>Notice what I have not done: I have not described the failure, and I have not asked Claude to edit anything.</p><p>The repository itself also does not contain a workshop comment or README section that gives the root cause away. Claude has to inspect the actual code.</p></div>
+<div class="demo"><strong>LIVE ACTION</strong><br/>Run Prompt A, then Prompt B. Ask one natural follow-up if Claude is vague.</div><div class="fallback"><strong>DEMO FALLBACK</strong><br/>If the answer is too broad, say: 'Narrow this to only the path involved in calculating and rendering the final total.'</div>
+<div class="transition"><strong>TRANSITION</strong><br/>Now let us name the context-building pattern you just watched.</div>
+<div class="sources"><strong>Official reference</strong><a href="https://code.claude.com/docs/en/context-window">https://code.claude.com/docs/en/context-window</a><a href="https://code.claude.com/docs/en/tools-reference">https://code.claude.com/docs/en/tools-reference</a></div>
+</section><section class="slide-note" id="slide-5">
+<div class="slide-head">
+<div class="num">05</div>
+<div class="slide-title"><h2>What just happened? The Context Ladder.</h2><div class="diagram-note"><strong>Diagram:</strong> The staircase is intentional. It shows progressive narrowing of attention rather than dumping the whole repository into context.</div><small>Slide 5 of 20</small></div>
+<div class="time">2 min</div>
+</div>
+<div class="purpose"><strong>PURPOSE</strong><br/>Turn the live interaction into a reusable question-driven context workflow.</div>
+<h3>Exact speaker notes</h3>
+<div class="script"><p>What you just watched is a pattern I use often. I call it the Context Ladder.</p><p>ORIENT asks what this repository does and how to run it. MAP asks for the main modules and their responsibilities. LOCATE connects the task to the relevant module. TRACE follows data or control from input to output. CONSTRAIN asks what tests, invariants and dependencies protect that path. SUMMARIZE separates known evidence from inference, assumptions and risk.</p><p>The important idea is not to load the most context possible. Good context is relevant evidence plus the constraints and decisions that matter now.</p><p>Each question causes Claude to inspect the next useful part of the system. I can correct or narrow the explanation before we climb to the next rung.</p><p>By the time we plan a change, both Claude and I share a mental model of the relevant subsystem rather than a pile of unrelated repository text.</p></div>
+<div class="transition"><strong>TRANSITION</strong><br/>Some context is discovered interactively like this. Other context should persist across sessions.</div>
+<div class="sources"><strong>Official reference</strong><a href="https://code.claude.com/docs/en/context-window">https://code.claude.com/docs/en/context-window</a><a href="https://code.claude.com/docs/en/best-practices">https://code.claude.com/docs/en/best-practices</a></div>
+</section><section class="slide-note" id="slide-6">
+<div class="slide-head">
+<div class="num">06</div>
+<div class="slide-title"><h2>Put durable knowledge in the right layer.</h2><div class="diagram-note"><strong>Diagram:</strong> Point from the context sources into CURRENT CONTEXT. This clarifies source, ownership and persistence better than four independent cards.</div><small>Slide 6 of 20</small></div>
+<div class="time">2.5 min</div>
+</div>
+<div class="purpose"><strong>PURPOSE</strong><br/>Clarify system instructions, user/project CLAUDE.md and repository-scoped auto memory after the audience has seen session context.</div>
+<h3>Exact speaker notes</h3>
+<div class="script"><p>Now we can separate the context we just built from the things that should be present every time.</p><p>System instructions come from Claude Code or its host. That is not where a normal repository convention belongs.</p><p>The user-level CLAUDE.md at ~/.claude/CLAUDE.md carries your own instructions across projects. People sometimes call this global memory informally, but the precise mechanism is user-level CLAUDE.md.</p><p>Project CLAUDE.md is team-shared repository context: architecture, build and test commands, conventions and project constraints.</p><p>Auto memory is different again. Claude writes those notes from corrections and discoveries. In current Claude Code it is scoped per repository and shared across worktrees, not one universal memory across all projects.</p><p>Both CLAUDE.md and auto memory are loaded as context. They guide behavior. They do not enforce security boundaries; permissions or hooks do that.</p></div>
+<div class="transition"><strong>TRANSITION</strong><br/>With useful context in place, the task itself can be expressed as a small engineering contract.</div>
+<div class="sources"><strong>Official reference</strong><a href="https://code.claude.com/docs/en/memory">https://code.claude.com/docs/en/memory</a><a href="https://code.claude.com/docs/en/context-window">https://code.claude.com/docs/en/context-window</a></div>
+</section><section class="slide-note" id="slide-7">
+<div class="slide-head">
+<div class="num">07</div>
+<div class="slide-title"><h2>Prompt like an engineer: specify the contract.</h2><small>Slide 7 of 20</small></div>
+<div class="time">1.5 min</div>
+</div>
+<div class="purpose"><strong>PURPOSE</strong><br/>Show that a task prompt becomes compact once the relevant context already exists.</div>
+<h3>Exact speaker notes</h3>
+<div class="script"><p>Once Claude and I share the code path, the task prompt can be small and precise.</p><p>I state the goal, the current behavior, the expected behavior, the constraints, and how we will verify success.</p><p>Before I read the prompt, I walk the room through the arithmetic on screen: subtotal two thousand; coupon minus two hundred; taxable amount eighteen hundred; eighteen percent tax is three hundred twenty-four; expected total two thousand one hundred twenty-four.</p><p>I point to the red mismatch: the application currently returns two thousand one hundred sixty. For this demonstration the business rule is explicit: a fixed coupon is applied before tax.</p><p>This is closer to a good engineering ticket than to prompt writing as a special art. The VERIFY section matters because it defines the evidence that can close the task.</p></div>
+<div class="transition"><strong>TRANSITION</strong><br/>That contract sits inside the four-phase workflow we will use for the rest of the session.</div>
+<div class="sources"><strong>Official reference</strong><a href="https://code.claude.com/docs/en/how-claude-code-works">https://code.claude.com/docs/en/how-claude-code-works</a></div>
+</section><section class="slide-note" id="slide-8">
+<div class="slide-head">
+<div class="num">08</div>
+<div class="slide-title"><h2>Research → Plan → Execute → Verify</h2><div class="diagram-note"><strong>Diagram:</strong> Point out the three human gates: ALIGN, APPROVE and ACCEPT. They show where judgment remains human.</div><small>Slide 8 of 20</small></div>
+<div class="time">1.5 min</div>
+</div>
+<div class="purpose"><strong>PURPOSE</strong><br/>Introduce the operating discipline and human checkpoints.</div>
+<h3>Exact speaker notes</h3>
+<div class="script"><p>Here is the workflow for the rest of the session.</p><p>Research means build context, inspect the current behavior and find evidence.</p><p>Then the human aligns: are we solving the right problem and do we agree on the root cause?</p><p>Plan means make the proposed change visible before editing.</p><p>Then the human approves or changes the plan.</p><p>Execute is the phase where I am comfortable giving Claude more autonomy because the boundaries are now explicit.</p><p>Verify means collect evidence: diff, tests, acceptance criteria and residual risk.</p><p>The human then accepts—or rejects—the result.</p><p>So I do not describe this as removing the human from execution. I describe it as: the human controls the boundaries; Claude handles the mechanics.</p></div>
+<div class="transition"><strong>TRANSITION</strong><br/>We already began Research by building context. Now let us turn that context into a root-cause investigation.</div>
+<div class="sources"><strong>Official reference</strong><a href="https://code.claude.com/docs/en/how-claude-code-works">https://code.claude.com/docs/en/how-claude-code-works</a></div>
+</section><section class="slide-note" id="slide-9">
+<div class="slide-head">
+<div class="num">09</div>
+<div class="slide-title"><h2>Start read-only. Find evidence first.</h2><small>Slide 9 of 20</small></div>
+<div class="time">1.5 min</div>
+</div>
+<div class="purpose"><strong>PURPOSE</strong><br/>Teach a disciplined Research phase.</div>
+<h3>Exact speaker notes</h3>
+<div class="script"><p>In Research, I explicitly make the first request read-only when the task matters.</p><p>I want Claude to tell me the current behavior, the code path, the tests, the root cause and the likely change surface.</p><p>I also like to ask for four labels: KNOWN, INFERRED, ASSUMED and RISK.</p><p>KNOWN means the code or test proves it.</p><p>INFERRED means the explanation is supported but not directly proven.</p><p>ASSUMED means we have not verified it.</p><p>RISK means what could break if we act on this understanding.</p><p>This is a simple way to stop an attractive explanation from silently becoming a fact.</p></div>
+<div class="transition"><strong>TRANSITION</strong><br/>Let us reveal the actual bug and see whether Claude can explain it without editing.</div>
+<div class="sources"><strong>Official reference</strong><a href="https://code.claude.com/docs/en/how-claude-code-works">https://code.claude.com/docs/en/how-claude-code-works</a></div>
+</section><section class="slide-note" id="slide-10">
+<div class="slide-head">
+<div class="num">10</div>
+<div class="slide-title"><h2>Live 02 — Investigate the bug</h2><small>Slide 10 of 20</small></div>
+<div class="time">3.5 min</div>
+</div>
+<div class="purpose"><strong>PURPOSE</strong><br/>Show root-cause research on the shopping calculator.</div>
+<h3>Exact speaker notes</h3>
+<div class="script"><p>Now I reveal the failure: for a two-thousand-rupee subtotal, a two-hundred-rupee fixed coupon and eighteen percent tax, the correct result is two thousand one hundred twenty-four, but the application returns two thousand one hundred sixty.</p><p>I will ask Claude to investigate without modifying files.</p><p>I expect it to trace the arithmetic. In the buggy code, tax is calculated on the full two thousand first, giving three hundred sixty. The fixed coupon is subtracted afterwards. That produces two thousand one hundred sixty.</p><p>The correct business rule is coupon first: two thousand minus two hundred gives eighteen hundred; eighteen percent tax on eighteen hundred is three hundred twenty-four; total two thousand one hundred twenty-four.</p><p>Then I ask the question that matters for engineering quality: why are our tests green? We should discover that the existing tests do not cover this fixed-coupon-plus-tax combination.</p><p>Before we plan, I ask Claude: 'What do you know, and what are you still assuming?'</p></div>
+<div class="demo"><strong>LIVE ACTION</strong><br/>Paste the slide prompt. Ask a follow-up: 'Show me the exact lines and why the current tests do not catch this.'</div><div class="fallback"><strong>DEMO FALLBACK</strong><br/>If Claude immediately offers a fix, interrupt with: 'Stop. Stay read-only. We are still in Research.'</div>
+<div class="transition"><strong>TRANSITION</strong><br/>Once the cause is understood, the next checkpoint is design—not code.</div>
+<div class="sources"><strong>Official reference</strong><a href="https://code.claude.com/docs/en/how-claude-code-works">https://code.claude.com/docs/en/how-claude-code-works</a><a href="https://code.claude.com/docs/en/tools-reference">https://code.claude.com/docs/en/tools-reference</a></div>
+</section><section class="slide-note" id="slide-11">
+<div class="slide-head">
+<div class="num">11</div>
+<div class="slide-title"><h2>Review the plan while change is still cheap.</h2><div class="diagram-note"><strong>Diagram:</strong> Keep the existing simple Research → Plan → Human review → Execute chain. A more elaborate diagram would repeat slide 8.</div><small>Slide 11 of 20</small></div>
+<div class="time">1.5 min</div>
+</div>
+<div class="purpose"><strong>PURPOSE</strong><br/>Make planning a real review checkpoint.</div>
+<h3>Exact speaker notes</h3>
+<div class="script"><p>Planning is where we expose scope, risk and verification before the repository changes.</p><p>I want the plan to say which files will change, what behavior will change, what will remain unchanged, what test will be added and what regression risk exists.</p><p>For a senior engineer, this is where you challenge architecture.</p><p>For a new engineer, this is where you ask questions until the plan makes sense.</p><p>The worst time to discover that we disagreed about the design is after Claude has edited ten files.</p></div>
+<div class="transition"><strong>TRANSITION</strong><br/>Let us ask for the smallest plan and review it together.</div>
+<div class="sources"><strong>Official reference</strong><a href="https://code.claude.com/docs/en/tools-reference">https://code.claude.com/docs/en/tools-reference</a></div>
+</section><section class="slide-note" id="slide-12">
+<div class="slide-head">
+<div class="num">12</div>
+<div class="slide-title"><h2>Live 03 — Plan → Approve</h2><div class="diagram-note"><strong>Diagram:</strong> Keep the existing three-node approval chain. The live prompt is the main content; the diagram only reinforces that the plan becomes an approved execution contract.</div><small>Slide 12 of 20</small></div>
+<div class="time">3 min</div>
+</div>
+<div class="purpose"><strong>PURPOSE</strong><br/>Use Plan mode, review the proposed route, and retain the approved plan as the execution contract.</div>
+<h3>Exact speaker notes</h3>
+<div class="script"><p>We have built context and identified the root cause. Now I want Claude to propose the route before it edits code.</p><p>I use /plan with the planning request. /plan is a convenience that puts Claude into Plan mode; the engineering value is that the approach becomes visible while change is still cheap.</p><p>The plan must name the files affected, the exact behavior change, risks and verification steps. I also state what must remain unchanged.</p><p>Now I review the plan with the room. Does it change the fixed-coupon path rather than rewriting the calculator? Does it preserve percentage discounts? Does it add the missing regression case? Does it avoid unrelated refactoring?</p><p>If we disagree, we change the plan now.</p><p>Once we approve it, I say clearly: this is the approved plan. We keep the same session so that plan remains part of the execution context.</p></div>
+<div class="demo"><strong>LIVE ACTION</strong><br/>Run the /plan prompt exactly as shown. Review the result aloud. Say: “This is the approved plan. We will execute this plan next.” Then exit Plan mode.</div>
+<div class="fallback"><strong>DEMO FALLBACK</strong><br/>If Plan mode is unavailable in the installed version or environment, use the same request as a read-only planning prompt and retain the reviewed result in the conversation.</div>
+<div class="transition"><strong>TRANSITION</strong><br/>We now have an approved route. Next I will separate that route from two different kinds of repetition: goal-driven and time-driven.</div>
+<div class="sources"><strong>Official reference</strong><a href="https://code.claude.com/docs/en/commands">https://code.claude.com/docs/en/commands</a><a href="https://code.claude.com/docs/en/best-practices">https://code.claude.com/docs/en/best-practices</a></div>
+</section><section class="slide-note" id="slide-13">
+<div class="slide-head">
+<div class="num">13</div>
+<div class="slide-title"><h2>Plan, /goal and /loop answer different questions.</h2><div class="diagram-note"><strong>Diagram:</strong> Use the three miniature loops to distinguish route control, finish-line control and time control. This is a conceptual comparison, so the diagrams materially reduce ambiguity.</div><small>Slide 13 of 20</small></div>
+<div class="time">2.5 min</div>
+</div>
+<div class="purpose"><strong>PURPOSE</strong><br/>Correctly distinguish method, condition-driven completion and scheduled repetition.</div>
+<h3>Exact speaker notes</h3>
+<div class="script"><p>There are three ideas here and I want us to keep them separate.</p><p>The approved PLAN answers HOW. It contains the route: files, design, scope, tests and risks.</p><p>/goal answers WHEN DONE. Setting a goal starts a turn immediately. After turns, a separate evaluator judges the condition from what Claude has surfaced in the conversation. If the condition is not met, Claude keeps working and receives the evaluator reason as guidance for the next turn.</p><p>/loop answers WHEN AGAIN. It re-runs a prompt on an interval while the session stays open. For example: /loop 5m check if the deployment finished.</p><p>So /goal is condition-driven and /loop is time-driven. They are not interchangeable.</p><p>For the shopping-calculator bug I need the approved plan and /goal. I do not need /loop.</p></div>
+<div class="transition"><strong>TRANSITION</strong><br/>Now we will execute the approved plan with a goal that describes the finish line.</div>
+<div class="sources"><strong>Official reference</strong><a href="https://code.claude.com/docs/en/goal">https://code.claude.com/docs/en/goal</a><a href="https://code.claude.com/docs/en/scheduled-tasks">https://code.claude.com/docs/en/scheduled-tasks</a><a href="https://code.claude.com/docs/en/commands">https://code.claude.com/docs/en/commands</a></div>
+</section><section class="slide-note" id="slide-14">
+<div class="slide-head">
+<div class="num">14</div>
+<div class="slide-title"><h2>Live 04 — Execute the approved plan</h2><div class="diagram-note"><strong>Diagram:</strong> This is the most important control-loop diagram in the deck: approved plan → execute → evidence → goal check → repeat/stop, with a human-review escape path for material scope change.</div><small>Slide 14 of 20</small></div>
+<div class="time">4 min</div>
+</div>
+<div class="purpose"><strong>PURPOSE</strong><br/>Demonstrate plan-constrained execution with /goal written as a measurable completion state.</div>
+<h3>Exact speaker notes</h3>
+<div class="script"><p>The human already approved the route. I am not asking Claude to plan again.</p><p>Notice the wording of the goal. It is a state that must become true: the approved plan is fully implemented without an unapproved scope or approach change, and the conversation contains evidence for each outcome.</p><p>I include concrete checks: coupon before tax, the exact two-thousand-rupee case, the regression test, unchanged percentage-discount behavior, and npm test exits zero.</p><p>That last detail matters because the /goal evaluator does not independently run commands or read files. It judges what Claude has surfaced into the conversation.</p><p>Setting /goal starts a turn immediately, so Claude can now edit, add the approved test, run the suite, inspect failures and correct implementation mistakes.</p><p>But a material change to the approved plan or scope is a human checkpoint. The goal text tells Claude to stop and ask rather than silently redesigning the work.</p></div>
+<div class="demo"><strong>LIVE ACTION</strong><br/>Run the /goal condition exactly as shown. Narrate the difference between implementation iteration and changing the approved plan.</div><div class="fallback"><strong>DEMO FALLBACK</strong><br/>If /goal is unavailable, say: 'Implement exactly the approved plan. Do not change its scope or approach without asking. Continue until the listed acceptance criteria and all tests pass.'</div>
+<div class="transition"><strong>TRANSITION</strong><br/>Even after the evaluator says the condition is met, the human has not accepted the change yet.</div>
+<div class="sources"><strong>Official reference</strong><a href="https://code.claude.com/docs/en/goal">https://code.claude.com/docs/en/goal</a></div>
+</section><section class="slide-note" id="slide-15">
+<div class="slide-head">
+<div class="num">15</div>
+<div class="slide-title"><h2>Live 05 — Goal met ≠ change accepted</h2><div class="diagram-note"><strong>Diagram:</strong> Goal met feeds a human acceptance gate. Scope, tests, goal evidence and risk are the four verification inputs.</div><small>Slide 15 of 20</small></div>
+<div class="time">3 min</div>
+</div>
+<div class="purpose"><strong>PURPOSE</strong><br/>Separate automated goal completion from explicit engineering verification and human acceptance.</div>
+<h3>Exact speaker notes</h3>
+<div class="script"><p>Suppose the /goal evaluator now says the condition is met. I still do not say, great, done.</p><p>The evaluator only judges evidence already surfaced in the conversation. It does not independently inspect the repository or run tools.</p><p>My verification pass therefore checks the actual diff against both the approved plan and the goal.</p><p>I ask for scope conformance, how each plan step was implemented, the regression test and full suite result, evidence for each goal condition, and anything still untested, assumed or risky.</p><p>I explicitly say not to make more changes during this verification. If we discover a material issue, the human decides whether to return to Research, Plan or Execute.</p><p>Claude Code also has a /verify skill that can build, run and observe an application rather than relying only on tests. That can be useful, but it does not replace the broader engineering checks I am teaching here: plan conformance, scope, tests, goal evidence and residual risk.</p><p>Only after looking at the evidence do I accept or reject the change.</p></div>
+<div class="demo"><strong>LIVE ACTION</strong><br/>Run the read-only verification prompt. Inspect the diff and test evidence with the audience. End with an explicit human decision.</div>
+<div class="fallback"><strong>DEMO FALLBACK</strong><br/>If time is short, show the relevant diff, the new regression test and the full test result, then state the remaining verification questions verbally.</div>
+<div class="transition"><strong>TRANSITION</strong><br/>We have completed the core workflow. The remaining slides deepen the capabilities and guardrails; they are compressible if the live demo used extra time.</div>
+<div class="sources"><strong>Official reference</strong><a href="https://code.claude.com/docs/en/goal">https://code.claude.com/docs/en/goal</a><a href="https://code.claude.com/docs/en/commands">https://code.claude.com/docs/en/commands</a></div>
+</section><section class="slide-note" id="slide-16">
+<div class="slide-head">
+<div class="num">16</div>
+<div class="slide-title"><h2>Tools define capability. Boundaries define control.</h2><small>Slide 16 of 20</small></div>
+<div class="time">1.5 min</div>
+</div>
+<div class="purpose"><strong>PURPOSE</strong><br/>Deepen the tool model now that the audience has already watched tools operate.</div>
+<h3>Exact speaker notes</h3>
+<div class="script"><p>You already saw tools in the live demo. Think of them as the agent’s sensors and hands.</p><p>Read, Glob and Grep build context. Edit and Write change files. Bash runs tests, builds and commands. Agent delegates a task into a separate context. MCP can extend the available external capabilities, and skills package reusable workflows.</p><p>The important control point is that having a tool available is not the same as unrestricted permission to use it. Permissions and hooks bound what that capability may do.</p></div>
+<div class="transition"><strong>TRANSITION</strong><br/>Agent is a special case because it also changes where context accumulates.</div>
+<div class="sources"><strong>Official reference</strong><a href="https://code.claude.com/docs/en/tools-reference">https://code.claude.com/docs/en/tools-reference</a><a href="https://code.claude.com/docs/en/permissions">https://code.claude.com/docs/en/permissions</a></div>
+</section><section class="slide-note" id="slide-17">
+<div class="slide-head">
+<div class="num">17</div>
+<div class="slide-title"><h2>Separate work when separation helps.</h2><div class="diagram-note"><strong>Diagram:</strong> The topology shows context isolation. Emphasize downward delegation and upward summary/evidence return.</div><small>Slide 17 of 20</small></div>
+<div class="time">1.5 min</div>
+</div>
+<div class="purpose"><strong>PURPOSE</strong><br/>Teach subagents as context isolation plus specialization.</div>
+<h3>Exact speaker notes</h3>
+<div class="script"><p>I primarily think of subagents as context-management and specialization tools.</p><p>Suppose I ask Claude to investigate fifty files. If all of those reads happen in my main session, I may fill the context with details that I only needed temporarily.</p><p>A subagent can do that exploration in its own context window and return a concise summary.</p><p>Custom subagents can also have their own focused system prompt, their own tool access and independent permissions. That is useful for roles such as a read-only reviewer, a test-coverage reviewer or a domain-specific investigator.</p><p>Use agents when separation provides value. Do not create multiple agents just because multiple agents sound impressive.</p></div>
+<div class="transition"><strong>TRANSITION</strong><br/>As we increase autonomy and add tools or agents, the control layers become more important.</div>
+<div class="sources"><strong>Official reference</strong><a href="https://code.claude.com/docs/en/sub-agents">https://code.claude.com/docs/en/sub-agents</a></div>
+</section><section class="slide-note" id="slide-18">
+<div class="slide-head">
+<div class="num">18</div>
+<div class="slide-title"><h2>Use the right layer for the right guarantee.</h2><div class="diagram-note"><strong>Diagram:</strong> Keep the existing guardrail layers. It already expresses increasing enforcement strength; another diagram would add noise.</div><small>Slide 18 of 20</small></div>
+<div class="time">2 min</div>
+</div>
+<div class="purpose"><strong>PURPOSE</strong><br/>Clarify guidance, permissions, hooks and organization policy.</div>
+<h3>Exact speaker notes</h3>
+<div class="script"><p>There are different kinds of control, and they should not be confused.</p><p>CLAUDE.md is guidance: please work this way.</p><p>Permissions are an approval boundary: allow this tool action, deny it, or ask me first.</p><p>Hooks run at lifecycle events. A deterministic hook can say: after an edit, run the formatter; before a dangerous command, block it; when Claude needs input, notify me.</p><p>The official docs explicitly describe hooks as deterministic control for things that should always happen rather than relying on the model to remember.</p><p>And above all of this is our organization policy: approved repositories, credentials, customer data and external services.</p><p>More autonomy should mean stronger boundaries and stronger verification—not weaker governance.</p></div>
+<div class="transition"><strong>TRANSITION</strong><br/>Finally, let us talk about what happens when a useful session becomes very long.</div>
+<div class="sources"><strong>Official reference</strong><a href="https://code.claude.com/docs/en/memory">https://code.claude.com/docs/en/memory</a><a href="https://code.claude.com/docs/en/permissions">https://code.claude.com/docs/en/permissions</a><a href="https://code.claude.com/docs/en/hooks-guide">https://code.claude.com/docs/en/hooks-guide</a></div>
+</section><section class="slide-note" id="slide-19">
+<div class="slide-head">
+<div class="num">19</div>
+<div class="slide-title"><h2>Preserve the signal. Remove the noise.</h2><div class="diagram-note"><strong>Diagram:</strong> Use the before/after compaction diagram first; then use the command list as reference.</div><small>Slide 19 of 20</small></div>
+<div class="time">1.5 min</div>
+</div>
+<div class="purpose"><strong>PURPOSE</strong><br/>Teach context hygiene, compaction and practical handoff.</div>
+<h3>Exact speaker notes</h3>
+<div class="script"><p>Context is finite, and long sessions accumulate both signal and noise.</p><p>Use /context to inspect what is consuming the window.</p><p>Claude Code automatically manages context as it fills, and /compact lets us deliberately replace older history with a structured summary.</p><p>There is a subtle but useful detail: system instructions stay in place, project-root CLAUDE.md and auto memory are re-injected after compaction, while some dynamically loaded context may have to be rediscovered later.</p><p>This is why I like an explicit handoff or compact instruction for important work. Preserve the goal, acceptance criteria, our current architecture understanding, decisions and evidence, files changed, verification status and open risks.</p><p>That lets the next session—or the next engineer—start with the useful reasoning state instead of replaying the entire conversation.</p></div>
+<div class="transition"><strong>TRANSITION</strong><br/>I will leave you with one compact operating model.</div>
+<div class="sources"><strong>Official reference</strong><a href="https://code.claude.com/docs/en/context-window">https://code.claude.com/docs/en/context-window</a><a href="https://code.claude.com/docs/en/how-claude-code-works">https://code.claude.com/docs/en/how-claude-code-works</a></div>
+</section><section class="slide-note" id="slide-20">
+<div class="slide-head">
+<div class="num">20</div>
+<div class="slide-title"><h2>Build shared context. Set a verifiable goal. Delegate inside boundaries. Accept with evidence.</h2><div class="diagram-note"><strong>Diagram:</strong> Keep the simple closing flow. It is a recap, so a richer diagram would compete with Q&amp;A.</div><small>Slide 20 of 20</small></div>
+<div class="time">8 min</div>
+</div>
+<div class="purpose"><strong>PURPOSE</strong><br/>Close and invite discussion.</div>
+<h3>Exact speaker notes</h3>
+<div class="script"><p>If you remember only four things from today, remember these.</p><p>Build shared context before asking for an important change. Research from evidence before you design.</p><p>Make the plan visible and review it while change is cheap.</p><p>Delegate execution inside explicit tool, permission and policy boundaries. Use /goal for a condition-driven finish line; use /loop for scheduled repetition, not as a substitute for the goal.</p><p>Verify the actual implementation and accept only when the evidence supports it.</p><p>The agent does not remove engineering judgment. It lets us apply that judgment at higher-leverage checkpoints.</p><p>Thank you. What questions do you have?</p></div>
+<div class="questions"><strong>Q&amp;A SEEDS</strong><ul><li>What kind of task in your team would have a clean enough finish line for /goal?</li><li>What knowledge should live in your project CLAUDE.md rather than being repeated in prompts?</li><li>What action would you enforce with a hook instead of merely asking Claude to remember?</li><li>Where would you insist on a human checkpoint even if the agent is capable of continuing?</li></ul></div>
+<div class="transition"><strong>TRANSITION</strong><br/>End by repeating: engineering judgment remains ours; Claude helps us scale the mechanics.</div>
+<div class="sources"><strong>Official reference</strong><a href="https://code.claude.com/docs/en/how-claude-code-works">https://code.claude.com/docs/en/how-claude-code-works</a><a href="https://code.claude.com/docs/en/memory">https://code.claude.com/docs/en/memory</a><a href="https://code.claude.com/docs/en/goal">https://code.claude.com/docs/en/goal</a><a href="https://code.claude.com/docs/en/scheduled-tasks">https://code.claude.com/docs/en/scheduled-tasks</a><a href="https://code.claude.com/docs/en/hooks-guide">https://code.claude.com/docs/en/hooks-guide</a></div>
+</section>
+</main>
+</div>
+</body>
+</html>
